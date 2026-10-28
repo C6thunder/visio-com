@@ -1,0 +1,31 @@
+# Visio 生成物
+*.vsd
+*.vsdx
+*.vsdm
+*.vssx
+*.vstx
+*.vssm
+*.vstm
+*.pdf
+*.png
+*.jpg
+
+# 临时与日志
+*.log
+*.tmp
+~$*
+out/
+build/
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+
+# Python（本仓库不用，防误提交）
+__pycache__/
+*.pyc
+
+# 系统
+Thumbs.db
+desktop.ini

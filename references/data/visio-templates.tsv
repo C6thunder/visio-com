@@ -1,0 +1,239 @@
+﻿# 模板文件	模板名	配套模具	页面形状数	# 扫描时间 2026-10-27 22:50
+ACTDIR_M	ACTDIR_M		0
+ACTUAL_FINISHDATES_GANTTCHART_M	ACTUAL_FINISHDATES_GANTTCHART_M	链接线, 甘特图框架, 圆角矩形, 列, 次要比例单元格, 主要比例单元格, 文本输入, 行, 任务栏	177
+AFFINITY_DIAGRAM_M	AFFINITY_DIAGRAM_M	圆角矩形, 正方形, 黄色, 浅绿色, 蓝色, 靛蓝色	36
+ASSOCIATIONS_UML_CLASS_M	ASSOCIATIONS_UML_CLASS_M	动态连接线, 复合, 类, 成员, 分隔符, 聚合, 关联, 复合, 圆角矩形	76
+AUDIT_DATAVISUALIZER_M	AUDIT_DATAVISUALIZER_M		0
+AUDIT_M	AUDIT_M		0
+AUDIT_SEVERAL_OUTCOMES_M	AUDIT_SEVERAL_OUTCOMES_M	终止符, 标记的流程, 决策, 动态连接线, 圆角矩形, 事件	39
+AUDIT_SUBPROCESS_M	AUDIT_SUBPROCESS_M	标记的文档, 标记的流程, 决策, 动态连接线, 圆角矩形, 事件, 页面内引用	70
+AWSDIAGRAMS_M	AWSDIAGRAMS_M		0
+AZUREDIAGRAMS_M	AZUREDIAGRAMS_M		0
+AZURELOGANALYTICS_M	AZURELOGANALYTICS_M	动态连接线, 虚拟机, 齿轮(不透明), 企业(可堆叠), 可扩展的云, Microsoft Azure, 辅助角色(不透明) , Web 角色(不透明) , 存储表, OMS, 通用数据库, 通用数据库(可堆叠), 服务器机架, 服务器/边栏选项卡(可堆叠)	137
+AZUREOMSWORKSPACE_M	AZUREOMSWORKSPACE_M	动态连接线, Microsoft Azure, 通用数据库, Web (可堆叠), 应用程序(为添加文本留出的空白)	34
+AZURESITERECOVERY_M	AZURESITERECOVERY_M	带编号的标签, 动态连接线, 服务器(边栏选项卡), 齿轮(不透明), 企业(可堆叠), Microsoft Azure, 虚拟机, 通用数据库, Azure 备份, 服务器/边栏选项卡(可堆叠), 存储(Azure), 存储队列	338
+BASFLO_M	BASFLO_M		0
+BASIC_AUDITDIAGRAM_M	BASIC_AUDITDIAGRAM_M	终止符, 标记的文档, 标记的流程, 数据传输, 决策, 动态连接线, 圆角矩形, 事件	47
+BASIC_GANTTCHART_M	BASIC_GANTTCHART_M	甘特图框架, 圆角矩形, 列, 次要比例单元格, 主要比例单元格, 非工作时间, 文本输入, 行, 任务栏, 链接线, 水平标注, 动态连接线.51	141
+BASIC_HOME_NETWORK_M	BASIC_HOME_NETWORK_M	无线访问点, 多功能设备, PC, 路由器, 动态连接线, LCD 监视器, 笔记本电脑, 智能手机, 普通.31, 圆角矩形	68
+BASIC_PESTLE_ANALYSIS_M	BASIC_PESTLE_ANALYSIS_M	圆角矩形.1000, PESTLE 分析	28
+BASIC_STRATEGY_DIAMOND_M	BASIC_STRATEGY_DIAMOND_M	圆角矩形, 菱形, 矩形, 圆角矩形.1000	27
+BASIC_UMLSEQUENCE_M	BASIC_UMLSEQUENCE_M	参与者生命线, 对象生命线, 激活, 圆角矩形, 消息.21, 返回消息.22, 自关联消息.23	38
+BASIC_VALUE_CHAIN_M	BASIC_VALUE_CHAIN_M	矩形, 直线箭头, 旋转三角形, 圆角矩形, 矩形.9, 直线箭头.10, 旋转三角形.11	42
+BASICCIRCUIT_DIAGRAM_M	BASICCIRCUIT_DIAGRAM_M	圆角矩形, 电阻器, 电容器, 交流电源, 接地, 双极性, 动态连接线, 自动联接	49
+BASICD_M	BASICD_M		0
+BASICELECTRICAL_DIAGRAM_M	BASICELECTRICAL_DIAGRAM_M	圆角矩形, 交流电源, 接地, 灯 2, 电感器, 磁芯, 保险丝, 闭合触点, 动态连接线, 自动联接	43
+BELTORGCHART_M	BELTORGCHART_M	高管带, 经理带, 职位带, 助理带, 空缺带, 小组框架, 动态连接线, 圆角矩形, 顾问带, 员工带, 多个形状, 三个职位, 标题/日期, 标题, 虚线报告, 直接附属经理, 多形状.70, 多形状.71, 多形状.72	117
+BF_DATAVISUALIZER_M	BF_DATAVISUALIZER_M	普通, 矩形	0
+BLOCK_M	BLOCK_M		0
+BLOCKP_M	BLOCKP_M	消失点	1
+BPMN_ADDRESS_CHANGE_PROCESS_M	BPMN_ADDRESS_CHANGE_PROCESS_M	开始事件, 任务, 结束事件.15, 池/通道, CFF 容器, 泳道列表, 阶段列表, 分隔符, 消息流, 圆角矩形, 折叠的子流程, 动态连接线	243
+BPMN_M	BPMN_M	折叠的子流程, 动态连接线	0
+BPMN_PROCESS_GATEWAY_M	BPMN_PROCESS_GATEWAY_M	开始事件, 任务, 结束事件.15, 网关.16, 圆角矩形, 折叠的子流程, 动态连接线	145
+BPMN_PROCESS_MULTIPLE_ROLES_M	BPMN_PROCESS_MULTIPLE_ROLES_M	开始事件, 任务, 结束事件.15, 池/通道, CFF 容器, 泳道列表, 阶段列表, 分隔符, 消息流, 圆角矩形, 折叠的子流程, 动态连接线	166
+BSTORM_EXPL_M	BSTORM_EXPL_M	OPR, 圆角矩形, 主标题, 标题, 动态连接线	67
+BSTORM_LGND_M	BSTORM_LGND_M	OPR, 主标题, 标题, 动态连接线, 待执行, 会议, 任务, 需要继续努力, 良好, 注意, 图例, 圆角矩形	101
+BSTORM_M	BSTORM_M	OPR	0
+BUSINESS_ACCOUNT_MANAGEMENT_M	BUSINESS_ACCOUNT_MANAGEMENT_M	圆形, 饼图弧, 标题和子标题块 5, 小组, 构思, 现金, 男人, 电话, 信息图, 多云, 时钟, 笑脸	65
+BUSINESS_FRAMEWORKS_TEMPLATE_M	BUSINESS_FRAMEWORKS_TEMPLATE_M		0
+CALNDR_M	CALNDR_M		0
+CAUSEF_M	CAUSEF_M	效果, 类别 1, 类别 2	5
+CEILPL_M	CEILPL_M		0
+CFF_DATAVISUALIZER_M	CFF_DATAVISUALIZER_M	普通, 矩形	0
+CFF_HORIZONTAL_M	CFF_HORIZONTAL_M	CFF 容器, 泳道列表, 阶段列表, 泳道, 分隔符, 圆角矩形, 开始/结束, 流程, 判定, 动态连接线	46
+CFF_SHAREDPROCESS_M	CFF_SHAREDPROCESS_M	CFF 容器, 泳道列表, 阶段列表, 泳道, 分隔符, 圆角矩形, 判定, 开始/结束, 流程, 文档, 动态连接线	49
+CFF_VERTICAL_M	CFF_VERTICAL_M	CFF 容器, 泳道列表, 阶段列表, 判定, 泳道(垂直), 分隔符(垂直), 开始/结束, 流程, 动态连接线, 圆角矩形	61
+CHART_M	CHART_M		0
+CHEFAUTOMATEARCHITECTUREONAWS_M	CHEFAUTOMATEARCHITECTUREONAWS_M	AWS 云 1, 可用性区域, VPC, 公共子网, 实例, 动态连接线, Internet 网关	104
+CHENCOLLEGEMANAGEMENT_M	CHENCOLLEGEMANAGEMENT_M	动态连接线, 实体, 主键属性, 属性, 关系	62
+CHENCONSTRUCTIONMANAGEMENT_M	CHENCONSTRUCTIONMANAGEMENT_M	动态连接线, 实体, 主键属性, 属性, 关系, 关系连接线, 属性。14	72
+CHENINSURANCEPOLICY_M	CHENINSURANCEPOLICY_M	动态连接线, 实体, 主键属性, 属性, 关系	66
+CIRCULARORGCHART_M	CIRCULARORGCHART_M	动态连接线, 高管硬币, 经理硬币, 职位硬币, 助理硬币, 顾问硬币, 空缺硬币, 圆角矩形, 员工硬币, 小组框架, 多个形状, 三个职位, 标题/日期, 标题, 虚线报告, 直接附属经理	147
+COMOLE_M	COMOLE_M		0
+CONLOG_M	CONLOG_M		0
+CRIME_SCENE_INVESTIGATION_M	CRIME_SCENE_INVESTIGATION_M	墙壁, 门, Wall.127, 双人椅, 圆桌, 椅子, 书柜, 电视柜, 电视机, 书桌, 电话, 大床, 长方形餐桌, 灯, 椭圆形浴缸, 浴缸 2, 水池 2, 柜子, 三联梳妆台, 床头柜, 棕榈科植物, 叶子, 台面水池, 带基座水池, 微波炉, 洗碗机, 咖啡壶, 空调, 洗衣机和烘干机, 炉灶, 垃圾捣碎机, 抽水马桶 2, 凳子, 引用点, 身体轮廓, 血池(小), 男子的踪迹, 阴影, 文本块, 标题块, 中型轿车 (顶部), 罗盘, 灌木, 仙人掌, 血迹	711
+CROWHRMANAGEMENTSYSTEM_M	CROWHRMANAGEMENTSYSTEM_M	含属性的实体, 主键属性, 主键分隔符, 属性, 实体, 关系	196
+CROWINVENTORYMANAGEMENT_M	CROWINVENTORYMANAGEMENT_M	实体, 主键属性, 主键分隔符, 属性, 关系, 含属性的实体	190
+CROWPATIENTDATABASE_M	CROWPATIENTDATABASE_M	实体, 主键属性, 主键分隔符, 属性, 关系	173
+CYCLE_DIAGRAM_TEMPLATE_M	CYCLE_DIAGRAM_TEMPLATE_M		0
+DATFLO_M	DATFLO_M		0
+DATMOD_M	DATMOD_M		0
+DBCHEN_M	DBCHEN_M	动态连接线	0
+DBCROW_M	DBCROW_M	动态连接线	0
+DBIDEF1X_M	DBIDEF1X_M	动态连接线	0
+DBMODL_M	DBMODL_M	跟踪文本, 动态连接线, 可选, 数据库模型	0
+DBUML_M	DBUML_M	动态连接线	0
+DEPTORGCHART_M	DEPTORGCHART_M	动态连接线, 圆角矩形, 高管凹槽.60, 动态连接线.69, 经理凹槽.75, 职位凹槽.76, 高管凹槽, 经理凹槽, 职位凹槽, 助理凹槽, 顾问凹槽, 空缺凹槽, 员工凹槽, 小组框架, 多个形状, 三个职位, 标题/日期, 职务, 虚线报告, 直接附属经理	94
+DOCUMENT_APPROVAL_WORKFLOW_M	DOCUMENT_APPROVAL_WORKFLOW_M	动态连接线, 开始, 阶段, 输入, 退出, 分配任务, 如果任何值等于值, 复制文档, 圆角矩形	61
+DRILLD_M	DRILLD_M		0
+DTLNET_M	DTLNET_M		0
+DTLNME_M	DTLNME_M		0
+DWGCNV_M	DWGCNV_M	点, ACAD_ISO02W100, ACAD_ISO03W100, 角度, ANSI31, ANSI32, ANSI33, ANSI34, ANSI35, ANSI36, ANSI37, ANSI38, Ar-Conc, Ar-parq1, Ar-Rroof, Box, Brass, Clay, Cork, Cross, Dash, Dolmit, Dots, Earth, Escher, Flex, Grass, Grate, 十六进制, Honey, Hound, Insul, 线条, Mudst, Net, Net3, Plast, Plasti, Sacncr, 正方形, Stars, Steel, Swamp, Trans, 三角形, Zigzag, ACAD_ISO05W100, ACAD_ISO04W100, ACAD_ISO06W100, ACAD_ISO07W100, ACAD_ISO08W100, ACAD_ISO09W100, ACAD_ISO10W100, ACAD_ISO11W100, ACAD_ISO12W100, ACAD_ISO13W100, ACAD_ISO14W100, ACAD_ISO15W100, AR-RSHKE, AR-SAND, AR-B816, AR-B816C, AR-BRSTD, AR-BRELM, AR-HBONE, BRICK, BRSTONE, AR-B88, 对齐(延长线长度不等), 在外部标注直径, 水平坐标, 在外部标注半径, 角度(延长线长度相等), 角度(延长线长度不等), 垂直坐标	0
+EDU_EECHIP_M	EDU_EECHIP_M		0
+EECHIP_M	EECHIP_M		0
+EEGENR_M	EEGENR_M	动态连接线	0
+EEICS_M	EEICS_M		0
+EESYS_M	EESYS_M		0
+ELETEL_M	ELETEL_M		0
+ENTAPP_M	ENTAPP_M		0
+EPC_M	EPC_M		0
+FAULT_M	FAULT_M		0
+five_steps_of_risk_assessment_m	five_steps_of_risk_assessment_m	横幅步骤, 圆角矩形.172, 流程	46
+FLRPLN_M	FLRPLN_M		0
+four_steps_of_habit_making_m	four_steps_of_habit_making_m	圆角矩形.172	11
+FPALL_M	FPALL_M		0
+GAME_PROCESS_M	GAME_PROCESS_M	圆角矩形, 开始, 到用户的消息, 过程, 来自用户的消息, 返回, 终止符, 动态连接线	63
+GANTT_M	GANTT_M	链接线	0
+GITTOS3WWEBHOOKS_M	GITTOS3WWEBHOOKS_M	AWS 云, 普通, 用户, 动态连接线, AWS Lambda, Amazon Simple Storage Service S3 存储桶及对象, AWS 标识和访问管理 IAM 添加打开	57
+HIERARCHICALORGCHART_M	HIERARCHICALORGCHART_M	动态连接线, 圆角矩形, 高管硬币.20, 动态连接线.21, 高管硬币, 经理硬币, 职位硬币, 助理硬币, 顾问硬币, 空缺硬币, 员工硬币, 小组框架, 多个形状, 三个职位, 标题/日期, 职务, 虚线报告, 直接附属经理	87
+HOMPLN_M	HOMPLN_M		0
+HUB_AND_SPOKE_MODEL_M	HUB_AND_SPOKE_MODEL_M	圆形横幅 1, 标题和子标题块 1, 圆形标注	25
+HVAC_M	HVAC_M	活动管道样式	0
+IDEF0_M	IDEF0_M		0
+INTERFACE_UML_CLASS_M	INTERFACE_UML_CLASS_M	动态连接线, 复合, 类, 成员, 分隔符, 接口, 枚举, 定向关联, 相关性, 接口实现, 圆角矩形	81
+ITIL_M	ITIL_M		0
+JENKINS_SERVER_ON_AZURE_M	JENKINS_SERVER_ON_AZURE_M	子网, 虚拟网络, 虚拟机 (经典), Azure 数据库 MariaDB 服务器, 密钥保管库, 磁盘, 显示器, Blob 块, NAT, 用户, 网络安全组, 动态连接线	131
+JOB_APPLICATION_PROCESS_M	JOB_APPLICATION_PROCESS_M	圆形横幅 1, 上凸带形, 弯曲箭头.39, 笑脸, 信息图, 电话, V 形步骤, 信息图.67, 中性人, 笔记本电脑, 小组, 日历, 安全, 奖杯	76
+LDAPDR_M	LDAPDR_M		0
+MAP_M	MAP_M		0
+MAP3D_M	MAP3D_M		0
+MEALL_M	MEALL_M		0
+MEDIUMENTERPRISECORPNET_M	MEDIUMENTERPRISECORPNET_M	普通, 邮件服务器, 数据库服务器.33, 路由器.29, 防火墙.30, 交换机.28, 动态连接线, 环形网络.42, PC, 以太网.27, 打印机.38, 扫描仪.40, 复印机.39, 多功能设备.41, 圆角矩形	161
+MRKTDG_M	MRKTDG_M		0
+MSFFBANALYSIS_M	MSFFBANALYSIS_M	折叠的子流程, 动态连接线, 池/通道, CFF 容器, 泳道列表, 阶段列表, 分隔符, 开始事件, 任务, 网关, 序列流, 序列流.23, 主题颜色.7, 主题颜色.1, Zephyr.1, 主题颜色.2, 主题颜色.3, 主题颜色.4, 主题颜色.5, 主题颜色.6, 展开的子流程, 矩形, 圆, 对角圆角矩形, 圆角矩形, 菱形, 正方形, 矩形.43, 三角形, 流程步骤, 流程条件	334
+MSFLOW_M	MSFLOW_M	动态连接线, 开始事件, 任务, 序列流.23, 矩形, 圆, 圆角矩形, 菱形, 矩形.43, 三角形, 结束事件	53
+MSFMGRAPPPROCESS_M	MSFMGRAPPPROCESS_M	开始事件, 任务, 展开的子流程, 网关, 主题颜色.7, 主题颜色.1, Zephyr.1, 主题颜色.2, 主题颜色.3, 主题颜色.4, 主题颜色.5, 主题颜色.6, 结束事件, 序列流, 三角形, 圆角矩形, 动态连接线, 菱形, 圆, 矩形, 矩形.43, 流程步骤, 流程条件	296
+MSFPURCHASEORDERWF_M	MSFPURCHASEORDERWF_M	动态连接线, 池/通道, CFF 容器, 泳道列表, 阶段列表, 分隔符, 主题颜色.7, 主题颜色.1, Zephyr.1, 主题颜色.2, 主题颜色.3, 主题颜色.4, 主题颜色.5, 主题颜色.6, 开始事件, 任务, 网关, 三角形, 圆角矩形, 菱形, 圆, 矩形, 矩形.43, 流程步骤, 流程条件	356
+MSFTRAVELREQAPPPROCESS_M	MSFTRAVELREQAPPPROCESS_M	折叠的子流程, 动态连接线, 任务, 池/通道, CFF 容器, 泳道列表, 阶段列表, 分隔符, 网关, 主题颜色.7, 主题颜色.1, Zephyr.1, 主题颜色.2, 主题颜色.3, 主题颜色.4, 主题颜色.5, 主题颜色.6, 开始事件, CalloutMaster, ConnectorCalloutMaster, 三角形, 圆角矩形, 菱形, 圆, 矩形, 矩形.43, 流程步骤, 流程条件	455
+MWFC_LIST_M	MWFC_LIST_M	320 * 480 框架, 状态栏, 搜索栏, 水平导航栏, 电子邮件列表项, 圆角矩形.100	164
+MWFC_LIST_R2L	MWFC_LIST_R2L	Frame 320*480, Search Bar, Horizontal Navigation Bar, Email List Item, Rounded Rectangle.100, Status Bar	164
+MWFC_M	MWFC_M		0
+MWFC_MEDIA_M	MWFC_MEDIA_M	360 * 640 框架 , 状态栏, 顶部导航栏, 搜索, 横幅, 标题, 文本, 图像, 底端导航栏, 视频, 背景, 段落文字, 圆角矩形.100	110
+MWFC_MEDIA_R2L	MWFC_MEDIA_R2L	Frame 360*640, Top Navigation Bar, Search, Image, Title, Text, Video, Bottom Navigation Bar, Background, Paragraph Text, Rounded Rectangle.100, Status Bar	110
+MWFC_USERPROF_M	MWFC_USERPROF_M	圆角矩形.100, 状态栏, 个人资料卡片 2, 手风琴 2, 背景, 汉堡按钮, 图像, 标题, 段落文字, 文本, 3:2 框架	114
+MWFC_USERPROF_R2L	MWFC_USERPROF_R2L	Frame 320*480, Hamburger Button, Background, Profile Card 2, Accordion 2, Accordion 1, Image, Title, Paragraph Text, Text, Rounded Rectangle.100, Status Bar	114
+NETW_M	NETW_M		0
+NETWME_M	NETWME_M		0
+NEW_AUDIT_DATAVISUALIZER_M	NEW_AUDIT_DATAVISUALIZER_M		0
+NEW_AUDIT_M	NEW_AUDIT_M		0
+NEW_BASFLO_M	NEW_BASFLO_M		0
+NEW_BASICD_M	NEW_BASICD_M		0
+NEW_BF_DATAVISUALIZER_M	NEW_BF_DATAVISUALIZER_M	普通, 矩形	0
+NEW_CALNDR_M	NEW_CALNDR_M		0
+NEW_CFF_DATAVISUALIZER_M	NEW_CFF_DATAVISUALIZER_M	普通, 矩形	0
+NEW_CHART_M	NEW_CHART_M		0
+NEW_COMOLE_M	NEW_COMOLE_M		0
+NEW_CROWINVENTORYMANAGEMENT_M	NEW_CROWINVENTORYMANAGEMENT_M	实体, 主键属性, 主键分隔符, 属性, 关系, 含属性的实体	190
+NEW_CROWPATIENTDATABASE_M	NEW_CROWPATIENTDATABASE_M	实体, 主键属性, 主键分隔符, 属性, 关系	173
+NEW_DATFLO_M	NEW_DATFLO_M		0
+NEW_FAULT_M	NEW_FAULT_M		0
+NEW_GANTT_M	NEW_GANTT_M	链接线, 甘特图框架	0
+NEW_ITIL_M	NEW_ITIL_M		0
+NEW_ORGCH_M	NEW_ORGCH_M	高管带, 经理带, 职位带, 助理带, 顾问带, 空缺带, 员工带, 小组框架, 多个形状, 三个职位, 标题/日期, 标题, 动态连接线, 虚线报告, 直接附属经理	0
+NEW_ORGWIZ_M	NEW_ORGWIZ_M	高管带, 经理带, 职位带, 助理带, 顾问带, 空缺带, 员工带, 小组框架, 多个形状, 三个职位, 标题/日期, 标题, 动态连接线, 虚线报告, 直接附属经理	0
+NEW_SIXSIG_M	NEW_SIXSIG_M		0
+NEW_XFUNC_M	NEW_XFUNC_M	CFF 容器, 泳道列表, 阶段列表, 泳道, 分隔符	14
+OFFLYT_M	OFFLYT_M		0
+ONPAGEFLOWCHART_M	ONPAGEFLOWCHART_M	开始/结束, 数据, 判定, 流程, 动态连接线, 页面内引用, 圆角矩形	35
+ORGANIZATIONAL_COMMUNICATION_PLAN_M	ORGANIZATIONAL_COMMUNICATION_PLAN_M	标题和子标题块 5, V 形列表, 流程级别.64	24
+ORGCH_M	ORGCH_M	高管带, 经理带, 职位带, 助理带, 顾问带, 空缺带, 员工带, 小组框架, 多个形状, 三个职位, 标题/日期, 标题, 动态连接线, 虚线报告, 直接附属经理	0
+ORGWIZ_M	ORGWIZ_M	高管带, 经理带, 职位带, 助理带, 顾问带, 空缺带, 员工带, 小组框架, 多个形状, 三个职位, 标题/日期, 标题, 动态连接线, 虚线报告, 直接附属经理	0
+PBASLN_M	PBASLN_M	, , , , , , , , , , , , , , , 	91
+PBLANK_M	PBLANK_M		0
+PCRTSK_M	PCRTSK_M	, , , , , , , , , , , , , 	93
+PCSHFL_M	PCSHFL_M	, , , , , , , , , , , , , , 	49
+PEDG_M	PEDG_M	PID 信号, PID 数据, PID 气压, PID 气压 2, PID 气压二元, PID 电力, PID 电力 2, PID 电力 3, PID 电力二元, PID 电力二元 2, PID 毛细管, PID 液压, PID 液压 2, PID 电磁, PID 电磁 2, PID 加热/冷却, PID 伴热, PID 机械, PID 机械 2, 接合点, 动态连接线	0
+PEPIPE_M	PEPIPE_M	PID 信号, PID 数据, PID 气压, PID 气压 2, PID 气压二元, PID 电力, PID 电力 2, PID 电力 3, PID 电力二元, PID 电力二元 2, PID 毛细管, PID 液压, PID 液压 2, PID 电磁, PID 电磁 2, PID 加热/冷却, PID 伴热, PID 机械, PID 机械 2, 接合点, 动态连接线	0
+PERSONALIZE_MARKETING_SOLUTION_USING_AZURE_M	PERSONALIZE_MARKETING_SOLUTION_USING_AZURE_M	浏览器, 函数应用, 缓存, 负载测试, Azure Cosmos DB, 流分析作业, Data Lake Storage Gen1, 仪表板, 事件中心, 动态连接线	77
+PERT_M	PERT_M		0
+PHONE_CONN_M	PHONE_CONN_M	圆角矩形, 开始, 判定 2, 来自用户的消息, 到用户的消息, 动态连接线	36
+PIN_MARKING_TEMPLATE_M	PIN_MARKING_TEMPLATE_M		0
+planning_a_week_step_by_step_m	planning_a_week_step_by_step_m	圆角矩形.172, 圆角矩形, 框架块, 矩形	104
+PLMPIP_M	PLMPIP_M		0
+PLTLYT_M	PLTLYT_M		0
+PROCESS_STEPS_M	PROCESS_STEPS_M	4 步箭头列表, 垂直标题列表, 标题和子标题块 1	0
+PRSAVL_M	PRSAVL_M	, , , , , , , , , , , , , , , , , , , 	167
+PRSSTS_M	PRSSTS_M	, , , , , , , , , , , , , 	52
+PSTRCT_M	PSTRCT_M		0
+PTSKST_M	PTSKST_M	, , , , , , , , , , , , , , , 	66
+QUICK_RETROSPECTIVES_TEMPLATES_M	QUICK_RETROSPECTIVES_TEMPLATES_M	矩形, 同侧圆角矩形, 单圆角矩形, 剪去同侧角的矩形, 圆角的矩形, 对角圆角矩形, 圆角矩形, 正方形, 黄色, 紫色	39
+RACK_M	RACK_M		0
+REMOTE_WORK_M	REMOTE_WORK_M		0
+RETAIL_AND_E-COMMERCE_SOLUTION_USING_AZURE_COSMOS_DB_M	RETAIL_AND_E-COMMERCE_SOLUTION_USING_AZURE_COSMOS_DB_M	浏览器, Azure Cosmos DB, 应用服务, 存储帐户, Search Services.181, 动态连接线	48
+SAPUSINGSIOS_M	SAPUSINGSIOS_M	AWS 云 1, 客户网关, 动态连接线, 公司数据中心, 客户端, 用户, VPC, 公共子网, NAT 网关, 自动缩放组, 实例, 专用子网 1, 通用组 2, 实例上的数据库, 可用性区域	333
+SDL_M	SDL_M		0
+SECACC_M	SECACC_M		0
+SHAPETACULARORGCHART_M	SHAPETACULARORGCHART_M	动态连接线, 总经理精彩图形, 经理精彩图形, 顾问精彩图形, 圆角矩形, 小组框架, 职位精彩图形, 助理精彩图形, 空缺精彩图形, 员工精彩图形, 多个形状, 三个职位, 标题/日期, 标题, 虚线报告, 直接附属经理	147
+SHAREPOINT_EXTRANETTOPOLOGY_M	SHAREPOINT_EXTRANETTOPOLOGY_M	圆角矩形, 以太网, 普通, 数据库服务器, Web 服务器.9, 普通.10, 应用程序服务器, 服务器, 动态连接线	88
+SIMPLE_WORKFLOW_M	SIMPLE_WORKFLOW_M	动态连接线, 开始, 阶段, 输入, 退出, 圆角矩形, 发送电子邮件	32
+SITPLN_M	SITPLN_M		0
+SIXSIG_M	SIXSIG_M		0
+SMALLMEDIUM_BUSINESS_NETWORK_M	SMALLMEDIUM_BUSINESS_NETWORK_M	无线访问点, 路由器, 动态连接线, 普通.31, 终端.41, 圆角矩形, 服务器, 防火墙, 打印机, 以太网	62
+SMART_GOALS_M	SMART_GOALS_M	矩形, 圆角矩形, 正方形, 炭色, 灰色	78
+SOCIAL_DISTANCING_M	SOCIAL_DISTANCING_M	距离圈, 距离箭头, 面板, 曲线形嵌板, 方向箭头, 脚顶挡, 脚步, 隔开, 洗手液, 疏散通道, 处置站, 戴手套, 普通, 文本标注, 斜纹, 蓝色带状线, 蓝色斜纹线, 蓝绿色条纹线, 蓝绿色斜纹线, 绿色带状线, 绿色斜纹线, 品红带状线条, 品红斜纹线, 红色条纹线, 红色斜纹线, 黄色带状线, 黄色斜纹线, 相隔 4' 6&quot;, 相隔 3', 隔开 4' 6&quot;, 脚相隔 3', 脚相隔 4' 6&quot;, 脚相隔 6', 线相隔 3', 线相隔 4' 6&quot;, 线相隔 6', Distancing Circle.42, 边界, 空间, 数据图形, 墙壁, 拐角壁柱, 壁柱, 矩形支柱, 立方工作台, 桌子, 书桌椅, 小型 L 形工作台, 复印机, 贮藏单元, 书柜, 向北箭头 1, 绘图比例, 比例符号, 页标题, 切换层按钮, 层集按钮, 门, 开口, 嵌板.70, 弧线 - 图形, 个人, 数据图形.2053, 状态图标, 有色形状, 圆形标注, 框, 接待台	1975
+SPCPLN_M	SPCPLN_M		0
+SPW_M	SPW_M	动态连接线	0
+SPW2_M	SPW2_M	动态连接线	0
+STAKEHOLDER_MAP_M	STAKEHOLDER_MAP_M	智能网格矩阵, 圆角矩形.172, 菱形 2	74
+step_infographics_m	step_infographics_m		0
+SUBPROCESSFLOWCHART_M	SUBPROCESSFLOWCHART_M	动态连接线, 判定, 开始/结束, 子流程, 数据, 流程, 圆角矩形	28
+SUBTASKS_GANTTCHART_M	SUBTASKS_GANTTCHART_M	甘特图框架, 圆角矩形, 列, 次要比例单元格, 主要比例单元格, 文本输入, 行, 任务栏, 链接线	185
+THE_DISCIPLINES_OF_USER_EXPERIENCE_DESIGN_M	THE_DISCIPLINES_OF_USER_EXPERIENCE_DESIGN_M	单折叠凸带形, 维恩图形状	20
+TIMELN_CYLINDRICAL_M	TIMELN_CYLINDRICAL_M	“今天”标记, 圆柱形日程表, 间歇, 块状间隔, 双三角形里程碑, 运行时间, 圆角矩形	99
+TIMELN_EXPANDEDBLOCK_M	TIMELN_EXPANDEDBLOCK_M	圆角矩形, 块状日程表, 间歇.13, 块状间隔.14, X 形里程碑, 展开的日程表, 菱形里程碑, 圆形里程碑	172
+TIMELN_M	TIMELN_M		0
+TIMELN_VERTICALBLOCK_M	TIMELN_VERTICALBLOCK_M	线形日程表, 间歇, 块状间隔, 三角形里程碑, 花括号间隔, 圆角矩形	126
+to_do_list_m	to_do_list_m	任务列表, 标记的任务 2, 任务	177
+to_do_list_template_m	to_do_list_template_m		0
+TQM_M	TQM_M		0
+TUCKMANS_MODEL_M	TUCKMANS_MODEL_M	标题和子标题块 5, 简单垂直标题, 弯曲弧形.20	23
+UACTME_M	UACTME_M		0
+UCMNME_BASIC_M	UCMNME_BASIC_M	复合, 圆角矩形, 参与者, 生命线, 消息	75
+UCMNME_BASIC_R2L	UCMNME_BASIC_R2L	Composite, Rounded Rectangle, Actor, Lifeline, Message	75
+UCMNME_M	UCMNME_M	复合, 消息	0
+UCMNME_SEQUENCEEXPRESSION_1_M	UCMNME_SEQUENCEEXPRESSION_1_M	圆角矩形, 复合, 参与者, 生命线, 动态连接线, 返回消息, 消息	82
+UCMNME_SEQUENCEEXPRESSION_1_R2L	UCMNME_SEQUENCEEXPRESSION_1_R2L	Composite, Rounded Rectangle, Actor, Lifeline, Dynamic connector, Message, Return Message	77
+UCMNME_SEQUENCEEXPRESSION_2_M	UCMNME_SEQUENCEEXPRESSION_2_M	复合, 圆角矩形, 生命线, 消息, 返回消息	75
+UCMNME_SEQUENCEEXPRESSION_2_R2L	UCMNME_SEQUENCEEXPRESSION_2_R2L	Composite, Rounded Rectangle, Lifeline, Message, Return Message	75
+UCOMME_BASIC_M	UCOMME_BASIC_M	复合, 圆角矩形, 依赖关系, 所需的接口, 提供的接口, 组件	131
+UCOMME_BASIC_R2L	UCOMME_BASIC_R2L	Composite, Rounded Rectangle, Dependency, Required Interface, Provided Interface, Component	130
+UCOMME_M	UCOMME_M	动态连接线, 复合	0
+UCOMME_MODULE_M	UCOMME_MODULE_M	复合, 圆角矩形, 依赖关系, 提供的接口, 组件, 所需的接口	160
+UCOMME_MODULE_R2L	UCOMME_MODULE_R2L	Composite, Rounded Rectangle, Dependency, Component, Provided Interface, Required Interface	159
+UCOMME_SUBSYSTEM_M	UCOMME_SUBSYSTEM_M	复合, 复合, 圆角矩形, 组件, 提供的接口, 所需的接口	147
+UCOMME_SUBSYSTEM_R2L	UCOMME_SUBSYSTEM_R2L	Composite, Composition, Rounded Rectangle, Component, Required Interface, Provided Interface	146
+UDEPME_BASIC_M	UDEPME_BASIC_M	复合, 圆角矩形, 关联, 项目实例, 节点实例	152
+UDEPME_BASIC_R2L	UDEPME_BASIC_R2L	Composite, Rounded Rectangle, Association, Artifact Instance, Node Instance	155
+UDEPME_HIERARCHICAL_NODES_M	UDEPME_HIERARCHICAL_NODES_M	复合, 圆角矩形, 复合, 节点, 项目	140
+UDEPME_HIERARCHICAL_NODES_R2L	UDEPME_HIERARCHICAL_NODES_R2L	Composite, Rounded Rectangle, Composition, Node, Artifact	143
+UDEPME_M	UDEPME_M	动态连接线, 复合	0
+UDEPME_MANIFESTATION_M	UDEPME_MANIFESTATION_M	复合, 所需的接口, 包, 提供的接口, 项目, 清单, 组件	134
+UDEPME_MANIFESTATION_R2L	UDEPME_MANIFESTATION_R2L	Composite, Rounded Rectangle, Package, Required Interface, Provided Interface, Artifact, Manifest, Component	137
+UML_CLASS_M	UML_CLASS_M	动态连接线, 复合, 类, 成员, 分隔符, 继承, 定向关联, 圆角矩形	72
+UML_USECASE_DEPENDENCIES_M	UML_USECASE_DEPENDENCIES_M	动态连接线, 参与者, 用例, 相关性, 包含, 扩展, 圆角矩形	33
+UML_USECASE_M	UML_USECASE_M	动态连接线, 参与者, 用例, 圆角矩形	28
+UML_USECASE_SUBSYSTEM_M	UML_USECASE_SUBSYSTEM_M	动态连接线, 参与者, 用例, 相关性, 包含, 扩展, 归纳, 子系统, 圆角矩形	32
+UMLSEQUENCE_INTERACTIONFRAME_M	UMLSEQUENCE_INTERACTIONFRAME_M	对象生命线, 激活, 圆角矩形, 备用片段, 交互操作数, 消息.41, 自关联消息, 返回消息.44	47
+UMLSEQUENCE_LOOP_M	UMLSEQUENCE_LOOP_M	参与者生命线, 对象生命线, 激活, 圆角矩形, 循环片段, 消息.24, 返回消息.25	43
+USEQME_M	USEQME_M		0
+USTAME_M	USTAME_M		0
+USTRME_M	USTRME_M	动态连接线, 复合	0
+UUSEME_M	UUSEME_M	动态连接线	0
+VERTICALFLOWCHART_M	VERTICALFLOWCHART_M	开始/结束, 数据, 判定, 流程, 动态连接线, 圆角矩形, 中心渐变	1
+VSM_M	VSM_M		0
+WEBMAP_M	WEBMAP_M	通用, 动态连接线, 离页连接线	0
+WEBSIT_M	WEBSIT_M		0
+WFDGM_M	WFDGM_M		0
+WORKFLOW_DEPARTMENTAL_M	WORKFLOW_DEPARTMENTAL_M	圆角矩形, 动态连接线, 客户.12, 网页.13, 部门.14, 装运.15, 仓库.16, 质量保证.17, 交易.18	52
+WORKFLOW_FUNCTION_M	WORKFLOW_FUNCTION_M	圆角矩形, 动态连接线, 供应商.29, 销售.30, 库存.31, 制造.32, 营销.33, 研究和开发.34, 设计.35	51
+WORKFLOW_PROCESS_M	WORKFLOW_PROCESS_M	圆角矩形, 动态连接线, 结束, 开始.44, 员工.45, 高管.46, 经理.48, 法律部门.49, 财务.50	52
+WRKFLO_M	WRKFLO_M		0
+WRKFME_M	WRKFME_M		0
+WWFC_BLOG_M	WWFC_BLOG_M	圆角矩形.100, 按钮, 搜索栏, 水平导航栏, 徽标, 横幅, 选项卡, 背景, 图像, 视频, 文本, 标题, 段落文字, 收藏夹, 共享, 更多, Internet 浏览器	289
+WWFC_BLOG_R2L	WWFC_BLOG_R2L	Internet Browser, Background, Logo, Pagination, Search Bar, Button, Tab Bar, Banner, Image, Video, Text, Favorite, Share, More, Rounded Rectangle.100, Title, Horizontal Navigation Bar	289
+WWFC_CONTENTRICH_M	WWFC_CONTENTRICH_M	背景, 徽标, 标题, 文本, 段落文字, 视频播放器, 按钮, 配置, 地图, Internet, 页脚, 圆角矩形.100, 图像, 圆形图像, Internet 浏览器	318
+WWFC_CONTENTRICH_R2L	WWFC_CONTENTRICH_R2L	Internet Browser, Background, Circular Image, Logo, Title, Text, Image, Button, Video Player, Configure, Map, Internet, Footer, Rounded Rectangle.100	323
+WWFC_ECOMMERCE_M	WWFC_ECOMMERCE_M	用户, 购物车, 圆角矩形.100, 徽标, 文本, 文本超链接, 分隔符, 副标题, 痕迹, 可折叠项, 背景, 图像, 选择, 评级, 搜索栏, 水平导航栏, 组合框, 复选框组, 数字范围滑块, 按钮, Internet 浏览器, Internet 浏览器.43, 图像.44, 水平导航栏.45	633
+WWFC_ECOMMERCE_R2L	WWFC_ECOMMERCE_R2L	Internet Browser, Logo, User, Shopping cart, Text, Search Bar, Time Picker, Double Tab Navigation Bar, Horizontal Navigation Bar, Wizard, Text Hyperlink, Right Click Menu, Seperator, Text Box, Combo Box, Title, Bread Crumb, Accordion, Checkbox Group, Radio Button Group, Radio Button, Tree List, Number Range Slider, Image, Button, Rating, Background, Rounded Rectangle.100, Select	632
+WWFC_M	WWFC_M		0
+XFUNC_M	XFUNC_M		0
