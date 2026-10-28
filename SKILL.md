@@ -69,6 +69,8 @@ COM 驱动本机 Visio 画图，产出**可编辑**源文件 + 位图（+ 矢量
 | **迭代调参在同一个会话里做**，别每轮重跑整个脚本 | 每次 `Start-VisioSession` 要 `Start-Process` 新 Visio（8–12 s）。改参数看一眼的循环应该是：画 → `Page.Export` → 读图/量像素 → 改 cell → 再导出，全程不重启。多轮重跑会白白多花几分钟 |
 | **先量后画**：用 `scripts/compare-render.ps1` 量 PNG 里的墨迹包围盒，别肉眼估算 | 文字上移 10 px、标题偏窄 7% 这类偏差肉眼看不准；量化后再改，一轮就能收敛 |
 | 绘制默认可见、逐步停顿、绘完停 1 秒再关窗口 | 让用户在 Visio 窗口里实时看到绘制过程与成品：`Start-VisioSession` 不传 `-Invisible`，每个主要步骤之间 `Start-Sleep`，收尾用 `Close-VisioSession -App $app -DelaySeconds 1`；`-Invisible` 只留给批量/期刊派生的独立会话 |
+| **变量名大小写不敏感**：`$c` 与 `$C` 是**同一个变量** | 同一作用域内禁止用仅大小写不同的两个名字表示不同东西（如 `$c` 表示卡片、`$C` 表示颜色）——不报错、静默取错值，最难查。约定：**函数参数 PascalCase（`$Page`/`$App`/`$Doc`）、局部变量 camelCase（`$page`/`$app`/`$doc`）**。库已按此约定，新写代码照抄 |
+| **函数名别撞 PowerShell 内置别名** | 自定义 `function R` 会被解析成 `Invoke-History` 别名，报「找不到接受实际参数」；`function Measure` 撞 `Measure-Object`、`function Select` 撞 `Select-Object` 同理。**短名一律加动词前缀**（`Invoke-`/`Get-`/`New-`/`Set-`/`Add-`），如 `Add-Check` 而不是 `R` |
 
 ## 交付前自检
 
