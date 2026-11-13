@@ -14,6 +14,10 @@
 #   * 组形状（块箭头、多数母版）填色要递归到子形状
 #   * 部分母版锁死尺寸/方向，自动化改不动
 
+# 加载期用严格模式，加载完还原（见文件末尾）：dot-source 本文件时顶层的赋值会留在**调用方**作用域，
+# 把调用方脚本里所有非终止错误都变成终止错误，行为突变且难查。
+# 真正需要严格语义的函数自己声明局部 $ErrorActionPreference（不外泄）。
+$script:VisioLibSavedEAP = $ErrorActionPreference
 $ErrorActionPreference = 'Stop'
 
 $script:VisioExe = 'C:\Program Files\Microsoft Office\root\Office16\VISIO.EXE'
@@ -53,6 +57,68 @@ function Stop-VisioProcess {
     return
   }
   $procs | Stop-Process -Force -ErrorAction SilentlyContinue
+}
+
+function New-VisioAppLease {
+  <#
+    取一个可用的 Visio 实例，**优先借用用户已经开着的那个**。
+
+    为什么不能直接 New-Object -ComObject Visio.Application：
+      Visio 是单实例应用，这句不会新起进程，只会**附着**到已经在跑的实例上；
+      随后的 $app.Quit() / Stop-VisioProcess 会把用户自己的窗口连同未保存的文档一起干掉
+      （Stop-VisioProcess 的未保存检查拦不住已经执行过的 Quit）。
+    所以这里区分归属：
+      Owned=$true  本函数自己起的实例 → 释放时可以 Quit + 收进程；
+      Owned=$false 借用的用户实例     → 释放时**不 Quit、不杀进程、不改 Visible**，
+                                       只把 AlertResponse 还原回去。
+    返回 @{ App; Owned; AlertBackup }，用完必须 Close-VisioAppLease 释放。
+  #>
+  param([switch]$Invisible)
+  $app = $null
+  try { $app = [Runtime.InteropServices.Marshal]::GetActiveObject('Visio.Application') } catch {}
+  if ($app) {
+    $backup = $null
+    try { $backup = $app.AlertResponse } catch {}
+    try { $app.AlertResponse = 7 } catch {}   # 别让模式对话框把自动化卡死，释放时还原
+    return @{ App = $app; Owned = $false; AlertBackup = $backup }
+  }
+  # 没有实例在跑 → 自己起一个（这时才归我们管）
+  if (-not (Test-Path $script:VisioExe)) {
+    throw ("找不到 Visio 可执行文件：$($script:VisioExe) —— 装的是别的版本/位数时，改 scripts\visio-lib.ps1 顶部的 `$script:VisioExe，或先跑 scripts\visio-doctor.ps1 看体检结果")
+  }
+  Start-Process -FilePath $script:VisioExe
+  for ($i = 0; $i -lt 60; $i++) {
+    Start-Sleep -Milliseconds 300
+    try { $app = [Runtime.InteropServices.Marshal]::GetActiveObject('Visio.Application'); break } catch {}
+  }
+  if (-not $app) {
+    try { $app = New-Object -ComObject Visio.Application }
+    catch {
+      Stop-VisioProcess -Force   # 我们刚起的进程，别留下孤儿（有未保存文档时它会拒绝强杀）
+      throw ('无法创建 Visio COM 对象：' + $_.Exception.Message +
+             ' —— 常见原因：Visio 未安装 / 位数与 PowerShell 不一致 / 首次启动需要交互登录。跑 scripts\visio-doctor.ps1 体检。')
+    }
+  }
+  try { $app.AlertResponse = 7 } catch {}
+  if ($Invisible) { try { $app.Visible = $false } catch {} }
+  return @{ App = $app; Owned = $true; AlertBackup = $null }
+}
+
+function Close-VisioAppLease {
+  <#
+    释放租约：只有自己起的实例才 Quit + 收进程；借用的用户实例一律原样留着，
+    只还原 AlertResponse。**别用这个函数去关用户自己开的 Visio。**
+  #>
+  param($Lease)
+  if (-not $Lease) { return }
+  $app = $Lease.App
+  if ($Lease.Owned) {
+    try { $app.Quit() } catch {}
+    Start-Sleep -Seconds 2
+    Stop-VisioProcess -Force
+  } elseif ($null -ne $Lease.AlertBackup) {
+    try { $app.AlertResponse = $Lease.AlertBackup } catch {}
+  }
 }
 
 function Start-VisioSession {
@@ -141,9 +207,7 @@ function Close-VisioSession {
   try { $App.Quit() } catch {}
   Start-Sleep -Seconds 2
   Stop-VisioProcess -Force
-  if ($script:CellWarnings.Count -gt 0) {
-    Write-Output ('[visio] 单元格写入告警: ' + (($script:CellWarnings | Select-Object -Unique) -join '; '))
-  }
+  Write-VisioCellWarnings
 }
 
 # ---------- 单元格 / 样式 ----------
@@ -153,6 +217,19 @@ function Set-VisioCell {
   param($Shape, [string]$Cell, [string]$Formula)
   try { $Shape.CellsU($Cell).FormulaU = $Formula; return $true }
   catch { [void]$script:CellWarnings.Add("$Cell=$Formula"); return $false }
+}
+
+function Write-VisioCellWarnings {
+  <#
+    打印并清空单元格写入告警（同一批告警只打一次）。
+    独立成函数是为了在**异常路径**（脚本中途 throw）也能打出来——
+    原来只在 Close-VisioSession 末尾打印，脚本一挂告警就全丢了，
+    "母版 guard 写不进 cell" 这类问题会退化成静默失败。
+  #>
+  if ($script:CellWarnings.Count -gt 0) {
+    Write-Output ('[visio] 单元格写入告警: ' + (($script:CellWarnings | Select-Object -Unique) -join '; '))
+    $script:CellWarnings.Clear()
+  }
 }
 
 function Get-VisioMaster {
@@ -383,8 +460,11 @@ function Save-VisioDoc {
     所以要 try .vsdx → fallback .vsd。导出 PNG 分辨率跟随页面尺寸。
     数据安全：SaveAs 会把目标文件锁住（存临时文件再 Move 会失败），
     所以改为"先把旧文件改名成 .bak → 直接存 → 失败就恢复 .bak"。
+    ⚠ 只有真写成了 .vsdx 才删 .bak；走了 .vsd 回退就把旧 .vsdx 还原回去——
+      否则回退分支会顺手把用户原来的 .vsdx 删掉，只剩一个 .vsd。
   #>
   param($Doc, $Page, [string]$VsdPath, [string]$PngPath)
+  $ErrorActionPreference = 'Stop'   # 函数内局部，不影响调用方
   $saved = ''
   if ($VsdPath) {
     $bak = ''
@@ -393,18 +473,27 @@ function Save-VisioDoc {
       if (Test-Path $bak) { Remove-Item $bak -Force }
       Move-Item $VsdPath $bak -Force
     }
-    try { $null = $Doc.SaveAs($VsdPath); $saved = $VsdPath }
+    $wroteOriginal = $false
+    try { $null = $Doc.SaveAs($VsdPath); $saved = $VsdPath; $wroteOriginal = $true }
     catch {
       # 不许静默：告诉调用方首次存盘失败的真实原因，再回落 .vsd
       Write-Warning ('保存到 ' + [System.IO.Path]::GetExtension($VsdPath) + ' 失败: ' + $_.Exception.Message.Trim() + ' -> 回落 .vsd')
       $fallback = [System.IO.Path]::ChangeExtension($VsdPath, '.vsd')
       try { $null = $Doc.SaveAs($fallback); $saved = $fallback }
       catch {
-        if ($bak -and (Test-Path $bak)) { Move-Item $bak $VsdPath -Force }
         Write-Warning ('保存失败: ' + $_.Exception.Message.Trim())
       }
     }
-    if ($bak -and (Test-Path $bak)) { Remove-Item $bak -Force }
+    if ($bak -and (Test-Path $bak)) {
+      if ($wroteOriginal) {
+        Remove-Item $bak -Force
+      } else {
+        # 没写出 .vsdx → 把旧 .vsdx 还原回去，不能让回退分支把老文件吃掉
+        Move-Item $bak $VsdPath -Force
+        if ($saved) { Write-Warning ('未能写出 ' + [System.IO.Path]::GetExtension($VsdPath) + '，已还原原文件；新内容在 ' + $saved) }
+        else { Write-Warning ('未能写出 ' + [System.IO.Path]::GetExtension($VsdPath) + '，已还原原文件') }
+      }
+    }
   }
   if ($PngPath) {
     # Export 会返回一个值，必须吃掉，否则会混进本函数的返回值
@@ -502,8 +591,8 @@ function Export-VisioPageRaster {
     等价于 $Zoom 倍的矢量渲染。$Zoom 必须是整数（还原时 1/$Zoom 无误差）。
 
     注意：它会**就地改动页面**，Visio 窗口里会看到一次放大重绘。
-    如果当前文档已经保存过，改用「另开一个不可见会话打开已保存文件 → 放大 → 导出 → 不保存」，
-    这样主文档和用户窗口都不受影响。
+    如果当前文档已经保存过，改用「另开一个独立会话打开已保存文件 → 放大 → 导出 → 不保存」，
+    这样主文档和用户窗口都不受影响（自起的实例不可见；借用用户已开的实例时会在他窗口里跑）。
   #>
   param($Page, [string]$Path, [int]$Zoom = 4)
   $w = $Page.PageSheet.CellsU('PageWidth').ResultIU
@@ -545,9 +634,8 @@ function Get-VisioFontIndex {
     查文档字体表里某个字体的 ID（Char.Font 只接受字体 ID，不能直接写字体名）。
       -Doc   文档对象（默认取当前活动文档）
       -Name  字体名，如 'Times New Roman' / 'Cambria' / '微软雅黑'
-    常见索引（Microsoft 365 本机实测）：微软雅黑 245、Times New Roman 23、Cambria 47、
-      Cambria Math 48、Calibri 4、Arial 21、Segoe UI 183、Consolas 65、Georgia 91。
-    ⚠ 字体 ID 随文档字体表变化（跨机器/跨版本可能不同），**别硬编码**，运行时查（带会话级缓存）。
+    运行时查：字体 ID 随文档字体表变化（跨机器/跨版本可能不同），**别硬编码**。
+      缓存按文档隔离（key 带 Doc.ID）。
       要"查不到就回退"的完整行为，用 Resolve-VisioFontIndex。
     用途：中文用 '微软雅黑'；公式/纯拉丁文字用 Times New Roman 斜体才像数学公式
          （微软雅黑里的 '·' 前后自带空隙，'α·Sim' 会排成 'α ·Sim'，很难看）。
@@ -560,7 +648,11 @@ function Get-VisioFontIndex {
     } catch { }
   }
   if (-not $Doc) { throw '请传入 -Doc 文档对象（Char.Font 只接受字体 ID，必须运行时查）' }
-  $key = $Name.ToLowerInvariant()
+  # 字体 ID 是**文档级**的（每份文档的字体表顺序不同），缓存 key 必须带文档标识，
+  # 否则同一会话里画第二份文档时会复用上一份的 ID，写错字体。
+  $docKey = ''
+  try { $docKey = [string]$Doc.ID } catch { try { $docKey = [string]$Doc.Name } catch { } }
+  $key = $docKey + '|' + $Name.ToLowerInvariant()
   if ($script:VisioFontCache.ContainsKey($key)) { return $script:VisioFontCache[$key] }
   for ($i = 1; $i -le $Doc.Fonts.Count; $i++) {
     try { if ($Doc.Fonts.Item($i).Name -eq $Name) { $script:VisioFontCache[$key] = $i; return $i } } catch { }
@@ -578,7 +670,10 @@ function New-VisioJournalDeliverables {
     为什么要单独一个会话：
       在主会话里就地缩放页面会触发整页重新排版重绘——用户在窗口里看到的就是
       "保存的时候又画了一遍"，而且主文档会被污染成缩放后的尺寸。
-      这里改为：主会话只画一次、只存一次；派生件全部在**不可见会话**里从已存文件生成。
+      这里改为：主会话只画一次、只存一次；派生件全部在**另一个会话**里从已存文件生成
+      （自己起的实例不可见；借用用户已开的实例时会在他的窗口里跑，别指望不闪）。
+    实例归属：用 New-VisioAppLease 取实例——用户自己开着 Visio 时**借用**它，
+      不 Quit、不杀进程、不改可见性，绝不把用户的窗口和未保存文档一起干掉。
 
     返回 @{ Vsd; Pdf; Preview = @(); HiRes = @() }
   #>
@@ -594,12 +689,12 @@ function New-VisioJournalDeliverables {
     [switch]$HighRes,
     [int]$HighResZoom = 4
   )
+  $ErrorActionPreference = 'Stop'   # 函数内局部，不影响调用方
   if (-not (Test-Path $SourceVsd)) { throw ('源文件不存在: ' + $SourceVsd) }
   New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
-  $app = New-Object -ComObject Visio.Application
-  $app.Visible = $false
-  try { $app.AlertResponse = 7 } catch {}
+  $lease = New-VisioAppLease -Invisible
+  $app = $lease.App
   $doc = $null
   $preview = @(); $hi = @(); $jVsd = ''; $pdf = ''
   try {
@@ -635,9 +730,9 @@ function New-VisioJournalDeliverables {
     # 5) 矢量 PDF（期刊首选交付格式）
     $pdf = Save-VisioPdf -Doc $doc -Path (Join-Path $OutDir ($Prefix + '.pdf'))
   } finally {
-    try { $doc.Saved = $true; $doc.Close() } catch {}
-    try { $app.Quit() } catch {}
-    Stop-VisioProcess -Force
+    try { if ($doc) { $doc.Saved = $true; $doc.Close() } } catch {}
+    Close-VisioAppLease -Lease $lease
+    Write-VisioCellWarnings
   }
   return @{ Vsd = $jVsd; Pdf = $pdf; Preview = $preview; HiRes = $hi }
 }
@@ -685,7 +780,7 @@ function Find-VisioMaster {
   param(
     [string[]]$Pattern,
     [string]$CachePath = '',
-    [string]$Root = 'C:\Program Files\Microsoft Office\root\Office16\Visio Content\2052',
+    [string]$Root = $script:StencilRoot,
     [int]$Limit = 80
   )
   if (-not $Pattern -or $Pattern.Count -eq 0) { throw '请至少给一个关键词' }
@@ -708,25 +803,26 @@ function Find-VisioMaster {
     return ($hits | Sort-Object Stencil, Name | Select-Object -First $Limit)
   }
 
-  $app = New-Object -ComObject Visio.Application
-  $app.Visible = $false
-  try { $app.AlertResponse = 7 } catch {}
-  foreach ($f in (Get-ChildItem $Root -Filter *.vssx)) {
-    $d = $null
-    try {
-      $d = $app.Documents.Open($f.FullName)
-      foreach ($m in $d.Masters) {
-        foreach ($p in $Pattern) {
-          if ($m.Name -like "*$p*" -or $m.NameU -like "*$p*") {
-            $hits.Add([pscustomobject]@{ Stencil = $f.BaseName; Name = $m.Name; NameU = $m.NameU })
-            break
+  $lease = New-VisioAppLease -Invisible
+  $app = $lease.App
+  try {
+    foreach ($f in (Get-ChildItem $Root -Filter *.vssx)) {
+      $d = $null
+      try {
+        $d = $app.Documents.Open($f.FullName)
+        foreach ($m in $d.Masters) {
+          foreach ($p in $Pattern) {
+            if ($m.Name -like "*$p*" -or $m.NameU -like "*$p*") {
+              $hits.Add([pscustomobject]@{ Stencil = $f.BaseName; Name = $m.Name; NameU = $m.NameU })
+              break
+            }
           }
         }
-      }
-    } catch { } finally { if ($d) { try { $d.Saved = $true; $d.Close() } catch {} } }
+      } catch { } finally { if ($d) { try { $d.Saved = $true; $d.Close() } catch {} } }
+    }
+  } finally {
+    Close-VisioAppLease -Lease $lease   # 异常路径也要释放，否则实例/AlertResponse 留在那儿
   }
-  try { $app.Quit() } catch {}
-  Stop-VisioProcess -Force
   return ($hits | Sort-Object Stencil, Name | Select-Object -First $Limit)
 }
 
@@ -739,17 +835,24 @@ function Get-VisioMasterByName {
   param(
     [Parameter(Mandatory = $true)][string]$Stencil,
     [Parameter(Mandatory = $true)][string]$Name,
-    [string]$Root = 'C:\Program Files\Microsoft Office\root\Office16\Visio Content\2052'
+    [string]$Root = $script:StencilRoot
   )
   $file = Join-Path $Root ($Stencil + '.vssx')
   if (-not (Test-Path $file)) { throw "找不到模具库: $file" }
-  $app = New-Object -ComObject Visio.Application
-  $app.Visible = $false
-  try { $app.AlertResponse = 7 } catch {}
-  $doc = $app.Documents.Open($file)
-  $m = $doc.Masters.Item($Name)
-  if (-not $m) { $doc.Close(); $app.Quit(); throw "模具库 $Stencil 里没有名为「$Name」的 master" }
-  return [pscustomobject]@{ Master = $m; Doc = $doc; App = $app }
+  $lease = New-VisioAppLease -Invisible
+  $app = $lease.App
+  $doc = $null
+  try {
+    $doc = $app.Documents.Open($file)
+    $m = $doc.Masters.Item($Name)
+    if (-not $m) { throw "模具库 $Stencil 里没有名为「$Name」的 master" }
+  } catch {
+    if ($doc) { try { $doc.Close() } catch {} }
+    Close-VisioAppLease -Lease $lease
+    throw
+  }
+  # Lease 一并返回：绘图结束后用 Close-VisioAppLease 释放（借用的用户实例不会被关掉）
+  return [pscustomobject]@{ Master = $m; Doc = $doc; App = $app; Lease = $lease }
 }
 
 # ---------- 从 visio-mcp 吸收的能力（自动布局 / 胶合连接线 / 结构化页检查 / 容器）----------
@@ -862,3 +965,7 @@ function New-VisioContainer {
   } catch { Write-Warning '容器成员添加失败（该母版可能不是 Visio 容器）' }
   return $container
 }
+
+# 还原调用方的错误偏好（见文件顶部）：库内的严格模式只作用在加载期，
+# 真正需要严格语义的函数自己声明局部 $ErrorActionPreference。
+$ErrorActionPreference = $script:VisioLibSavedEAP

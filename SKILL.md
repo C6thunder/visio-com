@@ -14,8 +14,9 @@ COM 驱动本机 Visio 画图，产出**可编辑**源文件 + 位图（+ 矢量
 
 ## 前置检查
 
-1. `C:\Program Files\Microsoft Office\root\Office16\VISIO.EXE` 存在（版本号随安装不同，先 `Test-Path`）。
-2. 本机模具目录：`...\Visio Content\2052\*.vssx`；没有就先跑 `scripts/shape-sheet.ps1` 打样张确认可用形状。
+1. Visio 可执行文件存在 —— 路径在 `scripts/visio-lib.ps1` 顶部的 `$script:VisioExe`（默认 Office16，装别的版本/位数就改这一处）。
+2. 本机模具目录存在 —— 同上，`$script:StencilRoot`（`...\Visio Content\2052\*.vssx`）。
+   两项都由 `powershell -File scripts\visio-doctor.ps1` 体检，**别猜路径，先跑它**。
 
 ## 三步法
 
@@ -36,7 +37,7 @@ COM 驱动本机 Visio 画图，产出**可编辑**源文件 + 位图（+ 矢量
    $code = Get-Content -Raw -Encoding UTF8 (Join-Path $skillRoot 'scripts\visio-lib.ps1')
    . ([scriptblock]::Create($code))
    ```
-   **别从零写构建脚本**：复制 `scripts/new-figure.ps1`（已含三段式骨架、空白页断言、满页白底、期刊缩放、576 dpi 独立会话导出），在"在这里画图"处填内容即可。
+   **别从零写构建脚本**：复制 `scripts/new-figure.ps1`（已含三段式骨架、空白页断言、满页白底、期刊缩放、576 dpi 派生会话导出），在"在这里画图"处填内容即可。
    常用函数：`Start-VisioSession` · `Open-VisioStencil` · `Get-VisioMaster` · `New-VisioCard` · `New-VisioText` · `New-VisioDot` · `New-VisioArrow` · `Add-VisioPageBackground` · `Save-VisioDoc` · `Save-VisioPdf` · `Export-VisioPageRaster` · `Set-VisioPageScale` · `Invoke-VisioAutoLayout` · `New-VisioConnector` · `Get-VisioPageState` · `New-VisioContainer`（全表见 `quick-lookup.md` §5）。
 
 ## 硬规则（每条都踩过，代价是重画）
@@ -44,9 +45,9 @@ COM 驱动本机 Visio 画图，产出**可编辑**源文件 + 位图（+ 矢量
 | 规则 | 原因 |
 |---|---|
 | 中文文本必须**同时**设 `Char.Font` 和 `Char.AsianFont`（默认微软雅黑） | **`Char.Font` 只管西文，中文走 `Char.AsianFont`；不设 AsianFont 中文会静默回退宋体(5)**。两个单元格都要写，用 `Resolve-VisioFontIndex` 运行时查（字体缺失会回退并告警） |
-| **公式用 Times New Roman 斜体**，索引运行时查 | 微软雅黑里 '·' 前后自带空隙，`α·Sim` 排成 `α ·Sim`；`Char.Font` 又不认字体名 | `Get-VisioFontIndex -Name 'Times New Roman'` + `Char.Style=2`；乘号改 '×'（U+00D7） |
-| **Visio 没有阴影/渐变/透明单元格** | `FillGradient`/`Gradient*`/`Shdw.*`/`FillTransparency` 全部不存在，UI 的"效果"也设不了 | 立体感用**形状叠层**：投影层 + 深色侧面层 + 正面层，偏移方向全图统一（见 `case-notes.md` §2） |
-| `Characters.CharProps` 在 PowerShell 里不可用 | 晚绑定报"找不到成员" | 想让同一段文字里不同片段不同样式，只能拆成多个文本框 |
+| **公式用 Times New Roman 斜体**，索引运行时查 | 微软雅黑里 '·' 前后自带空隙，`α·Sim` 排成 `α ·Sim`；`Char.Font` 又不认字体名。做法：`Get-VisioFontIndex -Name 'Times New Roman'` + `Char.Style=2`，乘号改 '×'（U+00D7） |
+| **Visio 没有阴影/渐变/透明单元格** | `FillGradient`/`Gradient*`/`Shdw.*`/`FillTransparency` 全部不存在，UI 的"效果"也设不了。立体感用**形状叠层**：投影层 + 深色侧面层 + 正面层，偏移方向全图统一（见 `case-notes.md` §2） |
+| `Characters.CharProps` 在 PowerShell 里不可用 | 晚绑定报"找不到成员"。想让同一段文字里不同片段不同样式，只能拆成多个文本框 |
 | 母版按名查找用 `Masters.Item("中文名")`，**不要 ItemU** | ItemU 走通用名，中文一律返回 null 且不报错 |
 | 同名形状跨库撞车 | 「判定」在 AUDIT_M/BASFLO_M/UACTME_M 都有，「圆形」「菱形」更普遍 → 取用必须带库名 |
 | 组形状上色要递归 `Shapes` | 块箭头、多数母版是组，父级 `FillForegnd` 不生效 |
@@ -59,20 +60,20 @@ COM 驱动本机 Visio 画图，产出**可编辑**源文件 + 位图（+ 矢量
 | **期刊图不用彩色文字**，线宽 ≥ 0.5 pt | Nature 明令 "Avoid coloured text"；0.75 pt 缩到成品只有 0.41 pt |
 | 期刊图必须**最终尺寸建页** | 编辑部按成品排版，大画布缩小后 9 pt 字缩成 2.5 pt |
 | **铺满页白底再导出**（`Add-VisioPageBackground`） | 不铺的话 `Page.Export` 只裁图形外接框，四周留白全被切掉 |
-| **主会话只画一次、只存一次；缩放别在主会话做** | 就地 `Set-VisioPageScale` 会整页重新排版重绘，窗口里看着像"保存时又画了一遍"，还会把母版污染成缩放后的尺寸。期刊件用 `New-VisioJournalDeliverables` 从已存文件在不可见会话里派生 |
+| **主会话只画一次、只存一次；缩放别在主会话做** | 就地 `Set-VisioPageScale` 会整页重新排版重绘，窗口里看着像"保存时又画了一遍"，还会把母版污染成缩放后的尺寸。期刊件用 `New-VisioJournalDeliverables` 从已存文件在**独立会话**里派生（自己起的实例不可见；借用用户已开的实例时会在他的窗口里跑） |
 | 存盘先试 `.vsdx`，失败落 `.vsd`；PDF 用 `Save-VisioPdf` | `SaveAs .pdf` 抛"参数无效" |
 | Visio 是**单实例**；查模具别用 COM 逐个开 | 残留实例会让旧图新图同时出现；362 库用 COM 开要 20~30 分钟（读 XML 只要 3 秒） |
-| **PowerShell 变量名大小写不敏感** | `$w = $page.Drop(...)` 会覆盖页面宽 `$W`，后面 `$W - 0.19` 直接报 "op_Subtraction"；几何量用 `$PageW/$PageH`，句柄用全称 |
+| **变量名大小写不敏感**：`$c` 与 `$C` 是**同一个变量** | `$w = $page.Drop(...)` 会覆盖页面宽 `$W`，后面 `$W - 0.19` 直接报 "op_Subtraction"；用 `$c` 表卡片、`$C` 表颜色则不报错、静默取错值，最难查。约定：**函数参数 PascalCase（`$Page`/`$App`/`$Doc`）、局部变量 camelCase（`$page`/`$app`/`$doc`）**，几何量用 `$PageW/$PageH`，句柄用全称。库已按此约定，新写代码照抄 |
 | 脚本里**中文引号“”不能进双引号字符串** | PowerShell 把全角引号也当引号，字符串会被截断，报“缺少终止符”。要么用单引号，要么把文案改写成 `「」` |
 | **杀掉 Visio 后要等几秒再开会话** | 立刻重开会偶发"模具打不开 / 对象引用未设置"；`Stop-Process VISIO` 后 `Start-Sleep 4` |
-| **脚本不杀你正在编辑的 Visio** | `Start-VisioSession` 发现未保存文档会直接报错停下，`Stop-VisioProcess` 只警告不强杀 | 避免脚本毁掉用户未保存的图；遇到报错先保存或关闭那些文档 |
+| **脚本不杀你正在编辑的 Visio** | `Start-VisioSession` 发现未保存文档会直接报错停下，`Stop-VisioProcess` 只警告不强杀。避免脚本毁掉用户未保存的图；遇到报错先保存或关闭那些文档 |
+| **实例归属：别裸开、别乱 Quit** | Visio 是单实例——`New-Object -ComObject Visio.Application` 不会新起进程，只是**附着**到已在跑的实例；裸开的实例还不设 `AlertResponse`，叠加 `Visible=$false` 后任何模态框（保存确认/兼容性提示）都会让 COM 调用**永久阻塞**（脚本卡死 + 隐形残留进程）；随后 `Quit()` 会关掉用户的窗口，并可能连带丢掉未保存文档（`Stop-VisioProcess` 的未保存检查拦不住已执行过的 `Quit`）。**画新图用 `Start-VisioSession`**（杀残留、等退出、`AlertResponse=7`、单实例）；**派生/检索这类可能撞上用户实例的操作用 `New-VisioAppLease`**（用户已开 Visio 就**借用**：不 Quit、不杀进程、不改可见性，只还原 `AlertResponse`），用完 `Close-VisioAppLease` 释放 |
 | **"N 个并排竖框"是版式惯性，可按内容改结构** | 6 段流水线可改 2×3 蛇形（上排向右、下排向左 + 右端垂直箭头）；宽卡能让标题到 16 pt、每条一行、2×2 网格。手法表见 quick-lookup §10 |
 | 沙箱会在命令结束时回收子进程 | 一次脚本里画完、存完、导完 |
-| **别裸用 `New-Object -ComObject Visio.Application`**，一律用 `Start-VisioSession` | 裸开的实例不设 `AlertResponse`；再叠加 `Visible=$false`，任何模态框（保存确认/兼容性提示）都会让 COM 调用**永久阻塞**——脚本卡死、残留隐形 Visio 进程。`Start-VisioSession` 已处理：杀残留、等退出、`AlertResponse=7`、单实例 |
+| **异常路径也要收尾** | 画到一半抛异常 → Visio 进程带着未保存草稿残留 → 下次 `Start-VisioSession` 发现未保存文档直接报错停下（自锁）。`new-figure.ps1` 已用 `trap` 收尾（关会话 + 打单元格告警）；自己写脚本照抄这个模式 |
 | **迭代调参在同一个会话里做**，别每轮重跑整个脚本 | 每次 `Start-VisioSession` 要 `Start-Process` 新 Visio（8–12 s）。改参数看一眼的循环应该是：画 → `Page.Export` → 读图/量像素 → 改 cell → 再导出，全程不重启。多轮重跑会白白多花几分钟 |
 | **先量后画**：用 `scripts/compare-render.ps1` 量 PNG 里的墨迹包围盒，别肉眼估算 | 文字上移 10 px、标题偏窄 7% 这类偏差肉眼看不准；量化后再改，一轮就能收敛 |
 | 绘制默认可见、逐步停顿、绘完停 1 秒再关窗口 | 让用户在 Visio 窗口里实时看到绘制过程与成品：`Start-VisioSession` 不传 `-Invisible`，每个主要步骤之间 `Start-Sleep`，收尾用 `Close-VisioSession -App $app -DelaySeconds 1`；`-Invisible` 只留给批量/期刊派生的独立会话 |
-| **变量名大小写不敏感**：`$c` 与 `$C` 是**同一个变量** | 同一作用域内禁止用仅大小写不同的两个名字表示不同东西（如 `$c` 表示卡片、`$C` 表示颜色）——不报错、静默取错值，最难查。约定：**函数参数 PascalCase（`$Page`/`$App`/`$Doc`）、局部变量 camelCase（`$page`/`$app`/`$doc`）**。库已按此约定，新写代码照抄 |
 | **函数名别撞 PowerShell 内置别名** | 自定义 `function R` 会被解析成 `Invoke-History` 别名，报「找不到接受实际参数」；`function Measure` 撞 `Measure-Object`、`function Select` 撞 `Select-Object` 同理。**短名一律加动词前缀**（`Invoke-`/`Get-`/`New-`/`Set-`/`Add-`），如 `Add-Check` 而不是 `R` |
 
 ## 交付前自检
@@ -88,7 +89,7 @@ COM 驱动本机 Visio 画图，产出**可编辑**源文件 + 位图（+ 矢量
 | 场景 | 打开 |
 |---|---|
 | 选形状（日常） | `references/quick-lookup.md` — 选型表、坑、函数速查 |
-| 某库的全部形状名 | `references/stencil-catalog.md` — 高频库全名 + 模板 + 362 库地图 |
+| 某库的全部形状名 / 模板 / 362 库地图 | `references/stencil-catalog.md` — 第 1–6 节高频库全名、第 7 节模板、第 8 节全库地图 |
 | 形状语义决策（箭头/流程/标记/混用） | `references/shape-selection.md` |
 | 配色与色盲安全 | `references/palettes.md` |
 | 期刊尺寸/字号/导出规格 | `references/journal-figure-standards.md` |
@@ -106,7 +107,7 @@ COM 驱动本机 Visio 画图，产出**可编辑**源文件 + 位图（+ 矢量
 | `new-figure.ps1` | `powershell -File scripts\new-figure.ps1 -Name 'fig-1' -Preset slides` | `-Name` `-Preset slides\|journal` `-OutDir` `-HighRes` | `[build] 阶段 1/3…` 日志 + 源文件(.vsdx/.vsd) + 预览 PNG；journal 另出 PDF 与 576 dpi 位图 | 形状数不对 → 看"绘制完成：形状 N"；存盘失败 → 先跑 `visio-doctor.ps1` 看存盘格式项 |
 | `compare-render.ps1` | `powershell -File scripts\compare-render.ps1 -PngPath out\render.png -RegionsJson regions.json` | `-PngPath` `-RegionsJson`（**必填**）`-TolerancePx` `-WhiteThreshold` `-OutLog` | 每区域 `OK/SHIFT/OVERFLOW/BORDER/EMPTY` + 墨迹包围盒与偏移 dx/dy；**异常 → exit 1** | SHIFT/OVERFLOW → 改**形状属性**（位置/尺寸/字号）；只有整体分辨率不对时才改导出参数 |
 | `visio-lib.ps1` | dot-source 后调函数 | — | 见 `references/quick-lookup.md` §5 | — |
-| `selftest.ps1` | `powershell -File scripts\selftest.ps1` | — | `[OK]/[FAIL]` 逐项；**失败 → exit 1**。纯逻辑自检，**不需要 Visio**（验字体回退等） | 改完 `visio-lib.ps1` 的公共逻辑后先跑它 |
+| `selftest.ps1` | `powershell -File scripts\selftest.ps1` | — | `[OK]/[FAIL]` 逐项；**失败 → exit 1**。纯逻辑自检，**不需要 Visio**（字体回退、字体缓存按文档隔离、存盘回退不丢旧文件、单元格告警只打一次） | 改完 `visio-lib.ps1` 的公共逻辑后先跑它 |
 | `example-2x2-matrix.ps1` | `powershell -File scripts\example-2x2-matrix.ps1` | `-OutDir` `-BaseName` | 2×2 对照矩阵全套产物 | 当模板抄，别当规范 |
 
 > 带 `-Name/-Pattern` 等参数的脚本：**必须 dot-source + 调用运算符**（`. ([scriptblock]::Create($code)) -Name 'fig-1'`），`Invoke-Expression` 传不了参数。

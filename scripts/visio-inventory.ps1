@@ -13,7 +13,7 @@
 #   visio-stencil-summary.md  每个模具库的 master 数量与名称摘要
 #   visio-templates.tsv       模板文件 \t 模板名 \t 配套模具 \t 页面形状数
 param(
-  [string]$Root   = 'C:\Program Files\Microsoft Office\root\Office16\Visio Content\2052',
+  [string]$Root   = 'C:\Program Files\Microsoft Office\root\Office16\Visio Content\2052',  # 同 visio-lib.ps1 的 $script:StencilRoot（本脚本不 dot-source lib，只能自带）
   [string]$OutDir = ''
 )
 $ErrorActionPreference = 'Continue'
@@ -24,7 +24,6 @@ if (-not $OutDir) {
                else { Join-Path $env:USERPROFILE '.agents\skills\visio-diagram' }
   $OutDir = Join-Path $skillRoot 'references\data'
 }
-$DocDir = Join-Path (Split-Path -Parent $OutDir) ''   # 供文档类产物使用
 if (-not (Test-Path $Root)) { throw "找不到模具目录: $Root" }
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 $stamp = Get-Date -Format 'yyyy-MM-dd HH:mm'
@@ -73,7 +72,8 @@ $stencils = Get-ChildItem $Root -Filter *.vssx | Sort-Object Name
 $total = 0
 foreach ($f in $stencils) {
   $xml = Get-ZipText -ZipPath $f.FullName -EntryName 'visio/masters/masters.xml'
-  $list = Get-MasterList -Xml $xml
+  # 强制成数组：空结果时 Get-MasterList 返回 $null，$null.Count 是 $null（拼出「（ 个）」）；不是防标量解包
+  $list = @(Get-MasterList -Xml $xml)
   foreach ($m in $list) {
     # 名字里可能带换行，会把 TSV 拆成多行，破坏 grep——先压成空格
     $nm  = ($m.Name  -replace '[\r\n\t]', ' ')
@@ -118,7 +118,7 @@ $tl = New-Object System.Collections.Generic.List[string]
 $tl.Add("# 模板文件`t模板名`t配套模具`t页面形状数`t# 扫描时间 $stamp")
 $tpls = Get-ChildItem $Root -Filter *.vstx | Sort-Object Name
 foreach ($v in $tpls) {
-  $list = Get-MasterList -Xml (Get-ZipText -ZipPath $v.FullName -EntryName 'visio/masters/masters.xml')
+  $list = @(Get-MasterList -Xml (Get-ZipText -ZipPath $v.FullName -EntryName 'visio/masters/masters.xml'))
   $pgXml = Get-ZipText -ZipPath $v.FullName -EntryName 'visio/pages/page1.xml'
   $shapes = 0
   if ($pgXml) { $shapes = ([regex]::Matches($pgXml, '<Shape\b')).Count }

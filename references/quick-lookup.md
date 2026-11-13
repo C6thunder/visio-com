@@ -62,21 +62,14 @@
 | 母版带默认文本 | 拖出来自带「在此处输入文本」 | 删文本，或用 `BASIC_M` 原生图元 |
 | 母版带徽标 | `MATRIXDOT_M`「点 1」自带数字 | 纯圆点用 `BASIC_M`「圆形」 |
 | 竖排文字 | `TxtAngle` 不生效 | 用形状 `Angle = 270°` |
-| 中文回退宋体 | `Char.Font` 只接受字体索引 | 中文一律 `Char.Font = '245'`（微软雅黑） |
+| 中文回退宋体 | `Char.Font` 只接受字体索引 | 中文必须**同时**写 `Char.Font` 和 `Char.AsianFont`，ID 用 `Resolve-VisioFontIndex -Name '微软雅黑' -Doc $doc` 运行时查（本机是 245，换机器/换文档都会变，**别硬编码**） |
 | 单位换算 | `Char.Size`/`LineWeight` 的 `ResultIU` 是**英寸** | 9.5 pt = 0.132 in，×72 才是 pt |
 | 空心形状白填充落在白底上 | 菱形/圆点画完"看不见" | 空心形状**必须留描边**（`New-VisioDiamond` 默认已带灰描边） |
-| **保存时整页重绘一次** | 主会话里就地 `Set-VisioPageScale` 缩页面 → 重新排版重绘，看着像"又画了一遍" | 主会话**只画一次、只存一次**；期刊件用 `New-VisioJournalDeliverables` 在不可见会话里从已存文件派生 |
+| **保存时整页重绘一次** | 主会话里就地 `Set-VisioPageScale` 缩页面 → 重新排版重绘，看着像"又画了一遍" | 主会话**只画一次、只存一次**；期刊件用 `New-VisioJournalDeliverables` 在**独立会话**里从已存文件派生（自己起的实例不可见；借用用户已开的实例时会在他的窗口里跑） |
 
 ## 4. 我要做 X → 打开哪个文件
 
-**完整索引在 `SKILL.md` 的「文件路由」表**，本节只列本文件覆盖不到的部分：
-
-| 我要做 | 打开 |
-|---|---|
-| 想知道某个库全部形状（几百个） | `stencil-catalog.md` 第 1–6 节 |
-| 想看 238 个模板的全貌 | `stencil-catalog.md` 第 7 节（模板 .vstx）；第 8 节是 **362 个模具库**地图 |
-| 查全库形状名（grep，不读全文） | `references/data/visio-masters-full.tsv`（9 112 行，**只 grep 别整读**） |
-| 看某个具体项目的复盘（坐标、叠层配方、实测分工） | `case-notes.md` |
+完整索引见 `SKILL.md` 的「文件路由」表（选形状、配色、期刊规格、模具全量清单、案例坐标都在那张表里），**本节不再重复**。
 
 ## 5. 库函数速查（`scripts/visio-lib.ps1`）
 
@@ -90,10 +83,11 @@ dot-source 之后直接用：
 |---|---|
 | `Start-VisioSession` | 起 Visio（可见/不可见）并返回干净会话，**会先杀掉残留实例并关掉残留文档** |
 | `Close-VisioSession -App $app` | 关文档 + 退出应用 |
+| `New-VisioAppLease` / `Close-VisioAppLease` | 取 / 释放一个 Visio 实例。**用户自己开着 Visio 时是「借用」**：不 `Quit`、不杀进程、不改可见性，只把 `AlertResponse` 还原回去；没有实例才自己起一个（那才归你 `Quit`）。凡是可能碰到用户实例的地方都用它——裸 `New-Object -ComObject Visio.Application` 只是**附着**到用户已开的实例，接着 `Quit()` 会关掉用户的窗口和未保存文档 |
 | `Open-VisioStencil -App $app -Names @('BASFLO_M')` | 打开模具库，返回 `@{ 'BASFLO_M' = <stencil doc> }` |
 | `Get-VisioMaster -Stencil $st -Name '判定'` | 按**中文名**取 master（不要用 ItemU） |
 | `Find-VisioMaster -Pattern '判定','时间线'` | 全库检索形状（走缓存清单，毫秒级） |
-| `Get-VisioMasterByName -Stencil 'BASFLO_M' -Name '判定'` | 直接拿可 Drop 的 master 对象 |
+| `Get-VisioMasterByName -Stencil 'BASFLO_M' -Name '判定'` | 直接拿可 Drop 的 master 对象；返回的 `.Lease` 用完要 `Close-VisioAppLease -Lease $r.Lease` 释放 |
 | `New-VisioCard` | 圆角卡片（容器角色，最常用） |
 | `New-VisioText` | 纯文字框 |
 | `New-VisioVerticalText` | 竖排文字（`Angle=270°`） |
@@ -102,12 +96,12 @@ dot-source 之后直接用：
 | `New-VisioArrow` | 单向箭头（线 + 实心箭头端） |
 | `New-VisioAxisArrow` | 坐标轴 / 双向箭头 |
 | `Set-VisioCell -Shape $s -Cell 'FillForegnd' -Formula 'RGB(234,242,247)'` | 写单元格。参数是 `-Shape` / `-Cell` / `-Formula`；颜色公式只能写 `RGB(r,g,b)`，**不能写 `#RRGGBB`**（ShapeSheet 不认，写了会被静默丢弃） |
-| `Get-VisioFontIndex -Name 'Times New Roman' -Doc $doc` | **查字体 ID**（`Char.Font`/`Char.AsianFont` 只认字体 ID；必须运行时查，别硬编码；带会话级缓存）。**中文必须同时写 `Char.AsianFont`，否则回退宋体(5)** |
+| `Get-VisioFontIndex -Name 'Times New Roman' -Doc $doc` | **查字体 ID**（`Char.Font`/`Char.AsianFont` 只认字体 ID；必须运行时查，别硬编码；缓存按文档隔离）。**中文必须同时写 `Char.AsianFont`，否则回退宋体(5)** |
 | `Resolve-VisioFontIndex -Name '微软雅黑' -Doc $doc` | 同上 + **缺失回退**：目标字体不存在 → 回退微软雅黑并告警一次；两者都没有 → 返回 0（调用方跳过写 `Char.Font`）。绘图脚本内部用它 |
 | `Style-VisioTree` | 递归整棵形状树（组形状上色/改线用） |
 | `Add-VisioPageBackground -Page $page` | 铺满页白底（**导出前必做**，否则四周留白被切）。页面尺寸由 `Start-VisioSession -Width/-Height` 决定，此函数**没有** `-WidthIn/-HeightIn` 参数 |
-| `Save-VisioDoc` | 存 `.vsdx`（失败退 `.vsd`）+ 导出 PNG |
-| `New-VisioJournalDeliverables` | **从已存的母版文件派生期刊件**（缩到成品尺寸 → 期刊 .vsdx + 矢量 PDF + 预览 + 576 dpi PNG），在不可见会话里做 |
+| `Save-VisioDoc` | 存 `.vsdx`（失败退 `.vsd`）+ 导出 PNG。**回退到 `.vsd` 时旧 `.vsdx` 会还原回来**，不会被吃掉 |
+| `New-VisioJournalDeliverables` | **从已存的母版文件派生期刊件**（缩到成品尺寸 → 期刊 .vsdx + 矢量 PDF + 预览 + 576 dpi PNG），在独立会话里做；**借用用户已开的 Visio 时不关它、不杀进程** |
 | `Save-VisioPdf -Doc $doc -Path $p` | 导出矢量 PDF（必须用这个，`SaveAs .pdf` 会报"参数无效"） |
 | `Export-VisioPageRaster -Page $page -Path $p -Zoom 4` | 导出高分辨率位图（144 dpi × Zoom，参数名是 `-Zoom` 不是 `-Scale`） |
 | `Set-VisioPageScale` | 整页等比缩到成品尺寸（如 183 mm） |
@@ -162,8 +156,8 @@ $skillRoot = if ($env:VISIO_SKILL_ROOT) { $env:VISIO_SKILL_ROOT } else { Join-Pa
 
 ### 9.2 公式排版
 
-- `Char.Font` 只接受**索引**，但 `Document.Fonts` 可枚举（本机 258 个）→ 用 `Get-VisioFontIndex -Name 'Times New Roman' -Doc $doc` **运行时查**（索引随字体表顺序变，换机器就错，**别硬编码**）。
-  本机实测：微软雅黑 245、Times New Roman 23、Cambria 47、Cambria Math 48、Calibri 4、Arial 21、Segoe UI 183。
+- `Char.Font` 只接受**索引**，但 `Document.Fonts` 可枚举（本机 258 个）→ 用 `Get-VisioFontIndex -Name 'Times New Roman' -Doc $doc` **运行时查**（索引随文档字体表变，换机器就错，**别硬编码**）。
+  （以下 ID **仅本机实测记录，不要写进代码**：微软雅黑 245、Times New Roman 23、Cambria 47、Cambria Math 48、Calibri 4、Arial 21、Segoe UI 183）
 - **公式用 Times New Roman + `Char.Style = 2`（斜体）** → 立刻像数学公式（衬线 + 斜体变量）。
 - **中点 '·'（U+00B7）在微软雅黑和 Times 里前后都自带空隙**，`α·Sim` 会排成 `α ·Sim`，很难看；U+22C5/U+2219 同理。→ **改用乘号 '×'（U+00D7）**，间距天然对称，最像公式。
 - PowerShell 里拼希腊字母用码点，别硬敲：`$a = [char]0x03B1; $b = [char]0x03B2`。
@@ -180,7 +174,7 @@ $skillRoot = if ($env:VISIO_SKILL_ROOT) { $env:VISIO_SKILL_ROOT } else { Join-Pa
 | 徽标标签 | 9.5 pt | 5.1 pt |
 | 底部公式条 | 19 pt | 10.3 pt |
 
-- **母版字号一律 ≥ 9.5 pt**：183 mm 成品宽度下 9 pt 会缩成 4.6 pt，低于 Nature 的 5 pt 下限（与 `SKILL.md`「母版最小 9.5 pt」一致）。
+- **母版字号一律 ≥ 9.5 pt**：183 mm 成品宽度下 9 pt 会缩成 4.6 pt，低于 Nature 的 5 pt 下限。9.5 pt × 0.5404 = 5.1 pt，留了余量（数学临界是 9.3 pt，见 `journal-figure-standards.md` §1；口径统一取 9.5，与 `SKILL.md`「母版最小 9.5 pt」一致）。
 - **6 个汉字 @13 pt ≈ 1.08 in** → 标题列至少留 1.15 in，否则标题折行；标题起始位置要避开左上角序号徽标（徽标 0.44 in 直径 + 0.1 间隙）。
 - 拉丁字符在**微软雅黑**里比 Times 宽（@10 pt ≈ 0.07 in/字符）→ `ModuleNotFound`、`x86_64/LoongArch64` 这类长串要单独给宽度或降号到 9 pt。
 - 卡片宽度按"每列内容长度"分配（内容多的段更宽），不要平均分；平均分必然有一列折行。

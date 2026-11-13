@@ -1,7 +1,7 @@
 # Visio 模具库与模板全量目录（查阅用）
 
 > **这是"库里有什么"的全量目录**；日常选型先看 `quick-lookup.md`（更短、够用）。
-> **数据**：本机 `C:\Program Files\Microsoft Office\root\Office16\Visio Content\2052`
+> **数据**：本机 Visio 安装目录下的 `Visio Content\2052`（即 `scripts/visio-lib.ps1` 的 `$script:StencilRoot`）
 > —— **362 个模具库（.vssx）/ 9112 个 master / 238 个模板（.vstx）**。
 > **换机器**：跑 `scripts/visio-inventory.ps1` 重扫（3 秒，不启动 Visio）。
 > **原始数据**（在 `references\data\`，只 grep 别整读）：`visio-masters-full.tsv`（全量 master）、
@@ -154,6 +154,7 @@ $st = Open-VisioStencil -App $app -Names @('BASFLO_M')
 ## 8. 模具库地图（全 362 个）
 
 > 数量 = 该库的 master 个数；完整形状名见 `references/data/visio-stencil-summary.md`。
+> 本表是从 `references/data/visio-stencils.tsv` 归组抄来的**阅读视图**；重扫后两边不一致时，**以 tsv 为准**（那份是脚本产物）。
 
 ### 云与平台图标（AWS / Azure / …）（73 个）
 
@@ -236,6 +237,8 @@ Find-VisioMaster -Pattern '判定','菱形','时间线' | Format-Table -AutoSize
 # ② 直接拿到 master 对象去画（自带中文名查找）
 $r = Get-VisioMasterByName -Stencil 'BASFLO_M' -Name '判定'
 $s = $page.Drop($r.Master, 3.0, 3.0)   # 注意：期间不要 Close($r.Doc)
+# 画完释放（借用的用户实例不会被关掉，只还原 AlertResponse）
+Close-VisioAppLease -Lease $r.Lease
 
 # ③ 不想等就 grep 全量清单
 Select-String -Path '...\references\data\visio-masters-full.tsv' -Pattern '时间线'

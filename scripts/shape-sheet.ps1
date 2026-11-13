@@ -23,6 +23,8 @@ param(
     'PROCESS_M'  = @('箭头步骤', 'V 形步骤')
   }
 )
+
+$ErrorActionPreference = 'Stop'
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
 $ctx = Start-VisioSession -Width 13.333 -Height 7.5

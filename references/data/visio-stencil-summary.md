@@ -133,7 +133,7 @@ Analysis Services · Azure 数据资源管理器群集 · Azure 服务 Log Analy
 ## AZUREAPPSERVICES_M  （10 个）
 Azure 应用程序配置 · API 管理服务 · 应用服务证书 · 应用服务域 · 应用服务环境 · 应用服务计划 · 应用服务 · CDN 配置文件 · 通知中心 · 搜索服务
 
-## AZUREBLOCKCHAIN_M  （ 个）
+## AZUREBLOCKCHAIN_M  （1 个）
 Azure 区块链服务
 
 ## AZURECLOUD_M  （205 个）
@@ -202,7 +202,7 @@ Data Box Edge · 数据框 · 恢复服务保管库
 ## AZUREMIXEDREALITY_M  （2 个）
 远程渲染 · 空间定位标记帐户
 
-## AZUREMONITOR_M  （ 个）
+## AZUREMONITOR_M  （1 个）
 SAP
 
 ## AZURENETWORKING_M  （25 个）
@@ -244,7 +244,7 @@ Azure NetApp 文件 · Azure 备份中心 · Data Box Edge · 数据框 · Data 
 ## AZUREVMSBYFUNCTION_M  （17 个）
 Active Directory VM · Web 服务器 VM · 文件服务器 VM · 数据库服务器 VM · 多个 Active Directory VM · 应用程序服务器 VM · 多个应用程序服务器 VM · 多个数据库服务器 VM · 目录服务器 VM · 多个目录服务器 VM · 域服务器 VM · 多个域服务器 VM · 文件服务器 · 多个文件服务器 VM · 多个 Web 服务器 VM · Windows Server VM · 多个 Windows Server VM
 
-## AZUREVMWARESOLUTION_M  （ 个）
+## AZUREVMWARESOLUTION_M  （1 个）
 AVS
 
 ## AZUREWEB_M  （7 个）

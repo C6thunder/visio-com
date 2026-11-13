@@ -116,10 +116,21 @@
 
 1. **灰度测试**：全图去饱和（Visio：改页面主题色为灰阶，或用图片工具转灰）。
    每个类别仍凭亮度区分 → 通过。
-2. **CVD 模拟**：用 [Coblis](https://color-blindness.com/) 或 Color Oracle / Sim Daltonism 分别模拟
-   红色盲、绿色盲、蓝黄色盲，确认没有只靠红绿区分的编码。
+2. **CVD 模拟**：用下面的工具分别模拟红色盲、绿色盲、蓝黄色盲，确认没有只靠红绿区分的编码。
 
 常见错误：加棕色（不在 Okabe-Ito 集内，对绿色盲易与深橙混淆）、用透明度叠加（混合色未验证）、
 黄色画细线、红绿做发散色板两端、同一变量在不同子图换色板、类别超过 8 个仍只靠颜色。
 
-详见 `references/journal-figure-standards.md`。
+### 验证工具
+
+| 工具 | 平台 | 用途 |
+|---|---|---|
+| [Coblis](https://color-blindness.com/) | 网页 | 上传图片，8 种 CVD 模拟 |
+| Color Oracle / Sim Daltonism | Win / macOS | 桌面实时全屏模拟 |
+| Vischeck + ImageJ 插件 | 免费 | 经典老牌检查 |
+| Photoshop / Illustrator **CUD Proof** | 桌面 | Okabe-Ito 作者参与开发的内置校验 |
+| Adobe Color | 网页 | 对比度比率 + 无障碍检测 |
+
+为什么必须做：色盲率与审稿概率、无障碍依据见 `references/journal-figure-standards.md` §3.1。
+
+规则出处与期刊尺寸/字号口径见 `references/journal-figure-standards.md`。

@@ -10,14 +10,17 @@
 # 三段式（每段都对应一个踩过的坑）：
 #   阶段 1  绘制 + 断言   → 画之前先确认页面是空的（防"画了两遍"），画完打印形状数
 #   阶段 2  存盘 + 导出   → .vsdx 优先、PNG 预览、期刊版再缩到成品尺寸出 PDF
-#   阶段 3  高分辨率位图  → **另开一个不可见会话**打开已保存文件来放大导出，
+#   阶段 3  高分辨率位图  → **另开一个独立会话**打开已保存文件来放大导出，
 #                          否则会就地改主文档，Visio 窗口里会看到一次放大重绘
+#                          （自己起的实例不可见；借用用户已开的实例时会在他的窗口里跑）
 param(
-  [string]$OutDir = (Join-Path $env:USERPROFILE 'Desktop\DSHTs\out'),
+  [string]$OutDir = (Join-Path (Get-Location) 'out'),
   [string]$Name = 'fig-1',
   [ValidateSet('slides','journal')][string]$Preset = 'slides',
   [switch]$HighRes
 )
+
+$ErrorActionPreference = 'Stop'
 
 # ---------- 载入工具箱 ----------
 # 技能根目录：直接执行时由 $PSScriptRoot 推得；被 dot-source 加载时为空，
@@ -38,6 +41,22 @@ New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 $vsdPath = Join-Path $OutDir ($Name + '.vsdx')
 $pngPath = Join-Path $OutDir ($Name + '.png')
 $pdfPath = Join-Path $OutDir ($Name + '.pdf')
+
+# ---------- 出错收尾 ----------
+# 画到一半抛异常时，Visio 进程和半成品草稿会留在机器上：残留进程带未保存文档，
+# 下一次 Start-VisioSession 会直接报错停下（自锁）。
+# trap + break = 先收尾，再把原错误继续抛出去（不吞异常）。
+$app = $null; $doc = $null; $st = $null; $closed = $false
+trap {
+  Write-Output ('[build] 出错：' + $_.Exception.Message)   # 别让收尾把原错误信息盖掉
+  if ($app -and -not $closed) {
+    Write-Output '[build] 出错收尾：关闭 Visio 会话（半成品丢弃，不弹保存框）'
+    try { $doc.Saved = $true } catch {}   # 标成已保存：关文档时不弹"要不要保存"
+    try { Close-VisioSession -App $app -Stencils $st } catch {}
+  }
+  Write-VisioCellWarnings    # 异常路径也要把单元格告警打出来
+  break
+}
 
 # ---------- 阶段 1：绘制 ----------
 Write-Output '[build] 阶段 1/3：开始绘制'
@@ -80,8 +99,9 @@ $saved = Save-VisioDoc -Doc $doc -Page $page -VsdPath $vsdPath -PngPath $pngPath
 Write-Output ('[build] 源文件: ' + $saved)
 Write-Output ('[build] 预览图: ' + $pngPath)
 Close-VisioSession -App $app -Stencils $st
+$closed = $true
 
-# ---------- 阶段 3：派生期刊件（独立不可见会话，主文档不重绘） ----------
+# ---------- 阶段 3：派生期刊件（独立会话，主文档不重绘） ----------
 if ($Preset -eq 'journal') {
   Write-Output '[build] 阶段 3/3：派生期刊件（独立会话，主文档不重绘）'
   $deliv = New-VisioJournalDeliverables `

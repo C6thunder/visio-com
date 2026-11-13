@@ -12,6 +12,8 @@ param(
   [string]$OutDir = (Join-Path (Get-Location) 'out'),
   [string]$BaseName = 'fig-2x2'
 )
+
+$ErrorActionPreference = 'Stop'
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
 $ctx = Start-VisioSession -Width 13.333 -Height 7.5

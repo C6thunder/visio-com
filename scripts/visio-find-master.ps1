@@ -13,6 +13,7 @@
 #   # 3) 直接拿到 master 对象去画
 #   $r = Get-VisioMasterByName -Stencil 'BASFLO_M' -Name '判定'
 #   $s = $page.Drop($r.Master, 3.0, 3.0)   # 期间不要 Close($r.Doc)
+#   Close-VisioAppLease -Lease $r.Lease    # 画完释放（借用的用户实例不会被关掉）
 #
 # 清单由 scripts/visio-inventory.ps1 生成（references\data\visio-masters-full.tsv）；
 # 没有清单时会退化为直接扫描（慢）。
@@ -21,6 +22,8 @@ param(
   [string]$Stencil = '',
   [int]$Limit = 60
 )
+
+$ErrorActionPreference = 'Stop'
 
 # 技能根目录：直接执行时由 $PSScriptRoot 推得；被 Invoke-Expression 加载时为空，
 # 退回到 $env:VISIO_SKILL_ROOT（装在别处时设这个）或默认安装位置
