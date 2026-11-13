@@ -75,6 +75,7 @@ COM 驱动本机 Visio 画图，产出**可编辑**源文件 + 位图（+ 矢量
 | **迭代调参在同一个会话里做**，别每轮重跑整个脚本 | 每次 `Start-VisioSession` 要 `Start-Process` 新 Visio（8–12 s）。改参数看一眼的循环应该是：画 → `Page.Export` → 读图/量像素 → 改 cell → 再导出，全程不重启。多轮重跑会白白多花几分钟 |
 | **先量后画**：用 `scripts/compare-render.ps1` 量 PNG 里的墨迹包围盒，别肉眼估算 | 文字上移 10 px、标题偏窄 7% 这类偏差肉眼看不准；量化后再改，一轮就能收敛 |
 | 绘制默认可见、逐步停顿、绘完停 1 秒再关窗口 | 让用户在 Visio 窗口里实时看到绘制过程与成品：`Start-VisioSession` 不传 `-Invisible`，每个主要步骤之间 `Start-Sleep`，收尾用 `Close-VisioSession -App $app -DelaySeconds 1`；`-Invisible` 只留给批量/期刊派生的独立会话 |
+| **节拍要短：每步 200–300 ms** | 同一个 `Start-Sleep` 用 0.5–0.9 s 时，6 列流程图光等就 5 s+，用户会觉得卡（本机踩过）。写成 `function Beat($ms) { Start-Sleep -Milliseconds $ms }`，阶段间 `Beat 200`–`Beat 300`，整张图 2 s 内画完；要“看得见成形”靠**步数多、单步短**，不是靠单步久 |
 | **函数名别撞 PowerShell 内置别名** | 自定义 `function R` 会被解析成 `Invoke-History` 别名，报「找不到接受实际参数」；`function Measure` 撞 `Measure-Object`、`function Select` 撞 `Select-Object` 同理。**短名一律加动词前缀**（`Invoke-`/`Get-`/`New-`/`Set-`/`Add-`），如 `Add-Check` 而不是 `R` |
 
 ## 交付前自检
