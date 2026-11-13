@@ -103,6 +103,7 @@ dot-source 之后直接用：
 | `New-VisioAxisArrow` | 坐标轴 / 双向箭头 |
 | `Set-VisioCell -Shape $s -Cell 'FillForegnd' -Formula 'RGB(234,242,247)'` | 写单元格。参数是 `-Shape` / `-Cell` / `-Formula`；颜色公式只能写 `RGB(r,g,b)`，**不能写 `#RRGGBB`**（ShapeSheet 不认，写了会被静默丢弃） |
 | `Get-VisioFontIndex -Name 'Times New Roman' -Doc $doc` | **查字体 ID**（`Char.Font`/`Char.AsianFont` 只认字体 ID；必须运行时查，别硬编码；带会话级缓存）。**中文必须同时写 `Char.AsianFont`，否则回退宋体(5)** |
+| `Resolve-VisioFontIndex -Name '微软雅黑' -Doc $doc` | 同上 + **缺失回退**：目标字体不存在 → 回退微软雅黑并告警一次；两者都没有 → 返回 0（调用方跳过写 `Char.Font`）。绘图脚本内部用它 |
 | `Style-VisioTree` | 递归整棵形状树（组形状上色/改线用） |
 | `Add-VisioPageBackground -Page $page` | 铺满页白底（**导出前必做**，否则四周留白被切）。页面尺寸由 `Start-VisioSession -Width/-Height` 决定，此函数**没有** `-WidthIn/-HeightIn` 参数 |
 | `Save-VisioDoc` | 存 `.vsdx`（失败退 `.vsd`）+ 导出 PNG |

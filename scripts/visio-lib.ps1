@@ -9,7 +9,7 @@
 #   Close-VisioSession -App $ctx.App
 #
 # 设计前提（血泪教训，改动前先读 SKILL.md 的“硬规则”）：
-#   * 中文文本必须显式指定字体（默认微软雅黑，本机 ID=245；等线=252），用 Get-VisioFontIndex 运行时查，别硬编码；Arial(21) 会让中文回退宋体
+#   * 中文文本必须显式指定字体（默认微软雅黑），用 Resolve-VisioFontIndex 运行时查（ID 跨机器会变，别硬编码）；Arial 会让中文回退宋体
 #   * 母版按中文名查找要用 Masters.Item("名字")，ItemU 取不到中文
 #   * 组形状（块箭头、多数母版）填色要递归到子形状
 #   * 部分母版锁死尺寸/方向，自动化改不动
@@ -19,6 +19,7 @@ $ErrorActionPreference = 'Stop'
 $script:VisioExe = 'C:\Program Files\Microsoft Office\root\Office16\VISIO.EXE'
 $script:StencilRoot = 'C:\Program Files\Microsoft Office\root\Office16\Visio Content\2052'
 $script:CellWarnings = New-Object System.Collections.ArrayList
+$script:FontWarned = @{}          # 字体缺失告警去重（一个字体只提醒一次）
 
 # ---------- 会话 ----------
 
@@ -82,6 +83,9 @@ function Start-VisioSession {
   if (Get-Process VISIO -ErrorAction SilentlyContinue) {
     Write-Warning '仍有 VISIO 进程未退出，后续可能附着到脏实例'
   }
+  if (-not (Test-Path $script:VisioExe)) {
+    throw ("找不到 Visio 可执行文件：$($script:VisioExe) —— 装的是别的版本/位数时，改 scripts\visio-lib.ps1 顶部的 `$script:VisioExe，或先跑 scripts\visio-doctor.ps1 看体检结果")
+  }
   Start-Process -FilePath $script:VisioExe
 
   $app = $null
@@ -89,7 +93,13 @@ function Start-VisioSession {
     Start-Sleep -Milliseconds 300
     try { $app = [Runtime.InteropServices.Marshal]::GetActiveObject('Visio.Application'); break } catch {}
   }
-  if (-not $app) { $app = New-Object -ComObject Visio.Application }
+  if (-not $app) {
+    try { $app = New-Object -ComObject Visio.Application }
+    catch {
+      throw ('无法创建 Visio COM 对象：' + $_.Exception.Message +
+             ' —— 常见原因：Visio 未安装 / 位数与 PowerShell 不一致 / 首次启动需要交互登录。跑 scripts\visio-doctor.ps1 体检。')
+    }
+  }
   $app.Visible = (-not $Invisible)
   try { $app.AlertResponse = 7 } catch {}   # 自动关掉模式对话框
 
@@ -170,13 +180,13 @@ function Style-VisioTree {
     Set-VisioCell $Shape 'LineWeight' ("{0} pt" -f $LineWeight) | Out-Null
   }
   # 字体必须无条件设：中文不指定字体会静默回退宋体。
-  # Char.Font 只认字体 ID，运行时用 Get-VisioFontIndex 查，别硬编码（本机微软雅黑=245、等线=252）。
-  $fidx = 245
-  try { $fidx = Get-VisioFontIndex -Name $Font -Doc $Shape.ContainingPage.Document } catch { }
-  if ($fidx -eq 0) { $fidx = 245 }   # 兜底：本机实测微软雅黑
-  Set-VisioCell $Shape 'Char.Font' "$fidx" | Out-Null
-  # Char.Font 只管西文；中文靠 Char.AsianFont，不设会静默回退宋体(5)
-  Set-VisioCell $Shape 'Char.AsianFont' "$fidx" | Out-Null
+  # Char.Font 只认字体 ID，运行时查，别硬编码（ID 跨机器会变）。
+  $fidx = Resolve-VisioFontIndex -Name $Font -Doc $Shape.ContainingPage.Document
+  if ($fidx -gt 0) {
+    Set-VisioCell $Shape 'Char.Font' "$fidx" | Out-Null
+    # Char.Font 只管西文；中文靠 Char.AsianFont，不设会静默回退宋体(5)
+    Set-VisioCell $Shape 'Char.AsianFont' "$fidx" | Out-Null
+  }
   if ($TextColor -ne '') {
     Set-VisioCell $Shape 'Char.Color' $TextColor | Out-Null
   }
@@ -198,10 +208,11 @@ function New-VisioText {
   Set-VisioCell $s 'LeftMargin' '0 in' | Out-Null
   Set-VisioCell $s 'RightMargin' '0 in' | Out-Null
   $s.Text = $Text
-  $fidx = Get-VisioFontIndex -Name $Font -Doc $Page.Document
-  if ($fidx -eq 0) { $fidx = 245 }
-  Set-VisioCell $s 'Char.Font' "$fidx" | Out-Null     # 西文字体
-  Set-VisioCell $s 'Char.AsianFont' "$fidx" | Out-Null # 中文字体（不设会回退宋体=5）
+  $fidx = Resolve-VisioFontIndex -Name $Font -Doc $Page.Document
+  if ($fidx -gt 0) {
+    Set-VisioCell $s 'Char.Font' "$fidx" | Out-Null     # 西文字体
+    Set-VisioCell $s 'Char.AsianFont' "$fidx" | Out-Null # 中文字体（不设会回退宋体=5）
+  }
   Set-VisioCell $s 'Char.Size' ("{0} pt" -f $Size) | Out-Null
   Set-VisioCell $s 'Char.Color' $Color | Out-Null
   if ($Bold) { Set-VisioCell $s 'Char.Style' '1' | Out-Null }
@@ -222,10 +233,11 @@ function New-VisioVerticalText {
   Set-VisioCell $s 'LinePattern' '0' | Out-Null
   Set-VisioCell $s 'FillPattern' '0' | Out-Null
   $s.Text = $Text
-  $fidx = Get-VisioFontIndex -Name $Font -Doc $Page.Document
-  if ($fidx -eq 0) { $fidx = 245 }
-  Set-VisioCell $s 'Char.Font' "$fidx" | Out-Null
-  Set-VisioCell $s 'Char.AsianFont' "$fidx" | Out-Null
+  $fidx = Resolve-VisioFontIndex -Name $Font -Doc $Page.Document
+  if ($fidx -gt 0) {
+    Set-VisioCell $s 'Char.Font' "$fidx" | Out-Null
+    Set-VisioCell $s 'Char.AsianFont' "$fidx" | Out-Null
+  }
   Set-VisioCell $s 'Char.Size' ("{0} pt" -f $Size) | Out-Null
   Set-VisioCell $s 'Char.Color' $Color | Out-Null
   Set-VisioCell $s 'Para.HorzAlign' '1' | Out-Null
@@ -536,7 +548,8 @@ function Get-VisioFontIndex {
     常见索引（Microsoft 365 本机实测）：微软雅黑 245、Times New Roman 23、Cambria 47、
       Cambria Math 48、Calibri 4、Arial 21、Segoe UI 183、Consolas 65、Georgia 91。
     ⚠ 字体 ID 随文档字体表变化（跨机器/跨版本可能不同），**别硬编码**，运行时查（带会话级缓存）。
-    用途：中文一律用 245（微软雅黑）；公式/纯拉丁文字用 Times New Roman 斜体才像数学公式
+      要"查不到就回退"的完整行为，用 Resolve-VisioFontIndex。
+    用途：中文用 '微软雅黑'；公式/纯拉丁文字用 Times New Roman 斜体才像数学公式
          （微软雅黑里的 '·' 前后自带空隙，'α·Sim' 会排成 'α ·Sim'，很难看）。
   #>
   param([string]$Name, $Doc = $null)
@@ -636,6 +649,30 @@ function Get-VisioSkillRoot {
   if ($env:VISIO_SKILL_ROOT) { return $env:VISIO_SKILL_ROOT }
   if ($PSScriptRoot) { return (Split-Path -Parent $PSScriptRoot) }
   return (Join-Path $env:USERPROFILE '.agents\skills\visio-diagram')
+}
+
+function Resolve-VisioFontIndex {
+  <#
+    字体名 → 文档字体表 ID，并处理"这台机器/这个文档里没有这个字体"：
+      1) 按名字查目标字体；
+      2) 查不到就回退到 微软雅黑（**仍按名字查**，不硬编码 245——ID 跨机器会变）；
+      3) 连微软雅黑都没有 → 返回 0，调用方跳过写 Char.Font（写 0 是无效值）并已有告警。
+  #>
+  param([string]$Name, $Doc)
+  $idx = 0
+  try { $idx = Get-VisioFontIndex -Name $Name -Doc $Doc } catch { }
+  if ($idx -eq 0 -and $Name -ne '微软雅黑') {
+    try { $idx = Get-VisioFontIndex -Name '微软雅黑' -Doc $Doc } catch { }
+    if ($idx -ne 0 -and -not $script:FontWarned.ContainsKey($Name)) {
+      $script:FontWarned[$Name] = $true
+      Write-Warning ("字体 '$Name' 不在文档字体表里，已回退到 微软雅黑")
+    }
+  }
+  if ($idx -eq 0 -and -not $script:FontWarned.ContainsKey('__none__')) {
+    $script:FontWarned['__none__'] = $true
+    Write-Warning ("字体 '$Name' 与 微软雅黑 都不在文档字体表里，该段文字将用 Visio 默认字体")
+  }
+  return $idx
 }
 
 function Find-VisioMaster {

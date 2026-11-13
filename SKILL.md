@@ -43,7 +43,7 @@ COM 驱动本机 Visio 画图，产出**可编辑**源文件 + 位图（+ 矢量
 
 | 规则 | 原因 |
 |---|---|
-| 中文文本必须**同时**设 `Char.Font` 和 `Char.AsianFont`（默认微软雅黑=245；等线=252） | **`Char.Font` 只管西文，中文走 `Char.AsianFont`；不设 AsianFont 中文会静默回退宋体(5)**。两个单元格都要写，用 `Get-VisioFontIndex` 运行时查 |
+| 中文文本必须**同时**设 `Char.Font` 和 `Char.AsianFont`（默认微软雅黑） | **`Char.Font` 只管西文，中文走 `Char.AsianFont`；不设 AsianFont 中文会静默回退宋体(5)**。两个单元格都要写，用 `Resolve-VisioFontIndex` 运行时查（字体缺失会回退并告警） |
 | **公式用 Times New Roman 斜体**，索引运行时查 | 微软雅黑里 '·' 前后自带空隙，`α·Sim` 排成 `α ·Sim`；`Char.Font` 又不认字体名 | `Get-VisioFontIndex -Name 'Times New Roman'` + `Char.Style=2`；乘号改 '×'（U+00D7） |
 | **Visio 没有阴影/渐变/透明单元格** | `FillGradient`/`Gradient*`/`Shdw.*`/`FillTransparency` 全部不存在，UI 的"效果"也设不了 | 立体感用**形状叠层**：投影层 + 深色侧面层 + 正面层，偏移方向全图统一（见 `case-notes.md` §2） |
 | `Characters.CharProps` 在 PowerShell 里不可用 | 晚绑定报"找不到成员" | 想让同一段文字里不同片段不同样式，只能拆成多个文本框 |
@@ -97,11 +97,16 @@ COM 驱动本机 Visio 画图，产出**可编辑**源文件 + 位图（+ 矢量
 
 ## 脚本
 
-- `scripts/new-figure.ps1` — **画图骨架，复制它改**（三段式：绘制断言 / 存盘导出 / 高分辨率独立会话）
-- `scripts/visio-lib.ps1` — 全部封装函数（会话、母版、卡片、圆点、箭头、导出、缩放、检索）
-- `scripts/visio-find-master.ps1` — 全库关键词检索形状，并提示同名形状在哪些库都有
-- `scripts/visio-inventory.ps1` — 重扫本机 362 库 / 238 模板清单（XML 直读，3 秒）
-- `scripts/example-2x2-matrix.ps1` — 完整示例：2×2 对照矩阵
-- `scripts/shape-sheet.ps1` — 打样张：把候选母版真实外观排成一页，选型前先看这个
-- `scripts/visio-doctor.ps1` — **环境一体检**：一个会话跑完 Visio 版本/字体表/存盘格式(.vsdx/.vsd/.pdf)/TEMP/模具目录/打开既有文件，替代手写一堆探测脚本
-- `scripts/compare-render.ps1` — **先量后画**：量 PNG 指定区域内的墨迹包围盒，报 `OK / SHIFT / OVERFLOW / BORDER / EMPTY`，退出码非 0 表示有异常
+| 脚本 | 调用方式 | 关键参数 | 输出 / 退出码 | 失败了怎么办 |
+|---|---|---|---|---|
+| `visio-doctor.ps1` | `powershell -File scripts\visio-doctor.ps1` | `-TestFile <既有.vsdx>` `-OutLog <log.txt>` | 表格 `OK/WARN/FAIL/SKIP` + 汇总；**FAIL → exit 1**，否则 0 | 先看 FAIL 行：Visio 路径/字体/存盘格式/模具目录，对症改环境再重跑 |
+| `visio-inventory.ps1` | `powershell -File scripts\visio-inventory.ps1` | `-Root <模具目录>` `-OutDir <输出目录>`（默认 `references\data`） | 写 `visio-masters-full.tsv` / `visio-stencils.tsv` / `visio-templates.tsv` / `visio-stencil-summary.md` | 换机器或装了新模具后重跑；不需要 Visio |
+| `visio-find-master.ps1` | `powershell -File scripts\visio-find-master.ps1 -Pattern '判定','时间线'` | `-Pattern <关键词[]>` `-Stencil <库名>` `-Limit` | 表格列出 模具库/名称/NameU/类型，末尾提示同名形状；无退出码 | 没命中就换关键词（中文名或 NameU 都试），或先跑 `visio-inventory.ps1` |
+| `shape-sheet.ps1` | `powershell -File scripts\shape-sheet.ps1` | `-Groups <库名→母版名[]>` `-OutDir` `-OutName` | 一页候选母版样张 PNG/源文件 | 看样张再定形状；某母版打不开先查 `visio-find-master.ps1` 的库名 |
+| `new-figure.ps1` | `powershell -File scripts\new-figure.ps1 -Name 'fig-1' -Preset slides` | `-Name` `-Preset slides\|journal` `-OutDir` `-HighRes` | `[build] 阶段 1/3…` 日志 + 源文件(.vsdx/.vsd) + 预览 PNG；journal 另出 PDF 与 576 dpi 位图 | 形状数不对 → 看"绘制完成：形状 N"；存盘失败 → 先跑 `visio-doctor.ps1` 看存盘格式项 |
+| `compare-render.ps1` | `powershell -File scripts\compare-render.ps1 -PngPath out\render.png -RegionsJson regions.json` | `-PngPath` `-RegionsJson`（**必填**）`-TolerancePx` `-WhiteThreshold` `-OutLog` | 每区域 `OK/SHIFT/OVERFLOW/BORDER/EMPTY` + 墨迹包围盒与偏移 dx/dy；**异常 → exit 1** | SHIFT/OVERFLOW → 改**形状属性**（位置/尺寸/字号）；只有整体分辨率不对时才改导出参数 |
+| `visio-lib.ps1` | dot-source 后调函数 | — | 见 `references/quick-lookup.md` §5 | — |
+| `selftest.ps1` | `powershell -File scripts\selftest.ps1` | — | `[OK]/[FAIL]` 逐项；**失败 → exit 1**。纯逻辑自检，**不需要 Visio**（验字体回退等） | 改完 `visio-lib.ps1` 的公共逻辑后先跑它 |
+| `example-2x2-matrix.ps1` | `powershell -File scripts\example-2x2-matrix.ps1` | `-OutDir` `-BaseName` | 2×2 对照矩阵全套产物 | 当模板抄，别当规范 |
+
+> 带 `-Name/-Pattern` 等参数的脚本：**必须 dot-source + 调用运算符**（`. ([scriptblock]::Create($code)) -Name 'fig-1'`），`Invoke-Expression` 传不了参数。
