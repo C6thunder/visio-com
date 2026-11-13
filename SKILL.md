@@ -56,6 +56,7 @@ COM 驱动本机 Visio 画图，产出**可编辑**源文件 + 位图（+ 矢量
 | `MATRIXDOT_M` 是**带编号徽标的数据点** | 要纯圆点用 `BASIC_M`「圆形」 |
 | 竖排文字用形状 `Angle = 270°` | `TxtAngle` 在本机不生效 |
 | `Char.Size` / `LineWeight` 的 `ResultIU` 单位是**英寸** | 9.5 pt = 0.132 in，差 72 倍会整页文字隐形 |
+| **写长度类单元格必须带单位**（`Char.Size`/`LineWeight`/`Rounding`/`Width`/`Height`…） | `Set-VisioCell $s 'Char.Size' 10.5` 不是 10.5 pt，而是 **10.5 英寸 = 756 pt**：字撑爆页面，`Page.Export` 只报笼统的「发生错误。Visio 无法完成导出」，产物是 **0 字节**文件，EMF 一起坏（header bounds 高 34 in）；PDF 却能正常导出，所以极容易误判成“图太复杂”。一律 `("{0} pt" -f $Size)` / `("{0} in" -f $w)`。同类坑：`Angle` 单元是**弧度**，写 45 = 45 rad |
 | **母版最小 9.5 pt（13.333 in 母版）** | 缩到 183 mm 后是 5.1 pt，守住 Nature 的 5 pt 下限 |
 | **期刊图不用彩色文字**，线宽 ≥ 0.5 pt | Nature 明令 "Avoid coloured text"；0.75 pt 缩到成品只有 0.41 pt |
 | 期刊图必须**最终尺寸建页** | 编辑部按成品排版，大画布缩小后 9 pt 字缩成 2.5 pt |

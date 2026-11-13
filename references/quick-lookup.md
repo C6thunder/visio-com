@@ -64,6 +64,8 @@
 | 竖排文字 | `TxtAngle` 不生效 | 用形状 `Angle = 270°` |
 | 中文回退宋体 | `Char.Font` 只接受字体索引 | 中文必须**同时**写 `Char.Font` 和 `Char.AsianFont`，ID 用 `Resolve-VisioFontIndex -Name '微软雅黑' -Doc $doc` 运行时查（本机是 245，换机器/换文档都会变，**别硬编码**） |
 | 单位换算 | `Char.Size`/`LineWeight` 的 `ResultIU` 是**英寸** | 9.5 pt = 0.132 in，×72 才是 pt |
+| **写**单元格只给裸数字 | `Set-VisioCell $s 'Char.Size' 10.5` → 10.5 **英寸** = 756 pt；`Width`/`Rounding` 同理 | 带单位：`("{0} pt" -f $n)` / `("{0} in" -f $n)`。症状：`Page.Export` 报「Visio 无法完成导出」+ 0 字节 PNG（PDF 却正常），EMF header bounds 高得离谱 |
+| `Angle` 写成度 | 形状方向完全不对（45 → 45 rad ≈ 2578°） | `Angle` 单元是**弧度**：`$deg * [Math]::PI / 180` |
 | 空心形状白填充落在白底上 | 菱形/圆点画完"看不见" | 空心形状**必须留描边**（`New-VisioDiamond` 默认已带灰描边） |
 | **保存时整页重绘一次** | 主会话里就地 `Set-VisioPageScale` 缩页面 → 重新排版重绘，看着像"又画了一遍" | 主会话**只画一次、只存一次**；期刊件用 `New-VisioJournalDeliverables` 在**独立会话**里从已存文件派生（自己起的实例不可见；借用用户已开的实例时会在他的窗口里跑） |
 

@@ -498,6 +498,9 @@ function Save-VisioDoc {
   if ($PngPath) {
     # Export 会返回一个值，必须吃掉，否则会混进本函数的返回值
     try { $null = $Page.Export($PngPath) } catch { Write-Warning ('导出失败: ' + $_.Exception.Message.Trim()) }
+    if ((Test-Path $PngPath) -and (Get-Item $PngPath).Length -eq 0) {
+      Write-Warning ('导出产物是 0 字节: ' + $PngPath + ' —— 先查是不是长度类单元格写了裸数字（Char.Size 10.5 = 10.5 英寸 = 756 pt，见 SKILL.md 硬规则）')
+    }
   }
   return $saved
 }
@@ -601,6 +604,11 @@ function Export-VisioPageRaster {
   if (Test-Path $Path) { Remove-Item $Path -Force }
   try { $null = $Page.Export($Path) } catch { Write-Warning ('导出失败: ' + $_.Exception.Message.Trim()) }
   Set-VisioPageScale -Page $Page -Factor (1.0 / $Zoom) -WidthIn $w -HeightIn $h | Out-Null
+  # Visio 导出失败时只报一个笼统的「发生错误」，不会说原因，产物是 0 字节文件——这里把它变成显式失败
+  if (-not (Test-Path $Path) -or (Get-Item $Path).Length -eq 0) {
+    Write-Warning ('导出产物为空: ' + $Path + ' —— 先查长度类单元格是否写了裸数字（Char.Size 10.5 = 10.5 英寸 = 756 pt），再查形状是否超出页面')
+    return ''
+  }
   return $Path
 }
 
@@ -618,11 +626,11 @@ function Save-VisioPdf {
   $miss = [System.Reflection.Missing]::Value
   try {
     $Doc.ExportAsFixedFormat(1, $Path, 1, 0, 0, $false, $true, $true, $true, $false, $miss) | Out-Null
-    if (Test-Path $Path) { return $Path }
+    if ((Test-Path $Path) -and (Get-Item $Path).Length -gt 0) { return $Path }
   } catch {
     Write-Warning ('PDF 导出失败(ExportAsFixedFormat): ' + $_.Exception.Message.Trim())
   }
-  try { $null = $Doc.SaveAs($Path); if (Test-Path $Path) { return $Path } }
+  try { $null = $Doc.SaveAs($Path); if ((Test-Path $Path) -and (Get-Item $Path).Length -gt 0) { return $Path } }
   catch { Write-Warning ('PDF 保存失败(SaveAs): ' + $_.Exception.Message.Trim()) }
   return ''
 }
