@@ -30,7 +30,10 @@ COM 驱动本机 Visio 画图，产出**可编辑**源文件 + 位图（+ 矢量
 3. **写脚本、画、存、导出、亲眼看**
    ```powershell
    # PS 5.1 按系统 ANSI 读文件，UTF-8 无 BOM 的中文脚本会被读坏 → 必须显式 -Encoding UTF8
-   $code = Get-Content -Raw -Encoding UTF8 'C:\Users\thunder\.agents\skills\visio-diagram\scripts\visio-lib.ps1'
+   # $skillRoot：本机技能根目录；装在默认位置 ~/.agents/skills/visio-diagram 时可省略
+   # （PS 5.1 没有 `??`，用 if/else）
+   $skillRoot = if ($env:VISIO_SKILL_ROOT) { $env:VISIO_SKILL_ROOT } else { Join-Path $env:USERPROFILE '.agents\skills\visio-diagram' }
+   $code = Get-Content -Raw -Encoding UTF8 (Join-Path $skillRoot 'scripts\visio-lib.ps1')
    . ([scriptblock]::Create($code))
    ```
    **别从零写构建脚本**：复制 `scripts/new-figure.ps1`（已含三段式骨架、空白页断言、满页白底、期刊缩放、576 dpi 独立会话导出），在"在这里画图"处填内容即可。

@@ -1,7 +1,7 @@
 ﻿# visio-inventory.ps1 — 扫描本机 Visio 模具库(.vssx) 与模板(.vstx)，产出可检索清单
 #
 # 用法：
-#   $code = Get-Content -Raw -Encoding UTF8 'C:\Users\thunder\.agents\skills\visio-diagram\scripts\visio-inventory.ps1'
+#   $code = Get-Content -Raw -Encoding UTF8 (Join-Path $skillRoot 'scripts\visio-inventory.ps1')
 #   Invoke-Expression $code
 #
 # 关键点：**不启动 Visio**。模具库是 OOXML 包，master 名单在 visio/masters/masters.xml 里，
@@ -19,7 +19,9 @@ param(
 $ErrorActionPreference = 'Continue'
 
 if (-not $OutDir) {
-  $skillRoot = if ($PSScriptRoot) { Split-Path -Parent $PSScriptRoot } else { 'C:\Users\thunder\.agents\skills\visio-diagram' }
+  $skillRoot = if ($env:VISIO_SKILL_ROOT) { $env:VISIO_SKILL_ROOT }
+               elseif ($PSScriptRoot) { Split-Path -Parent $PSScriptRoot }
+               else { Join-Path $env:USERPROFILE '.agents\skills\visio-diagram' }
   $OutDir = Join-Path $skillRoot 'references\data'
 }
 $DocDir = Join-Path (Split-Path -Parent $OutDir) ''   # 供文档类产物使用

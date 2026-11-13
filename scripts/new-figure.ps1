@@ -1,7 +1,7 @@
 ﻿# new-figure.ps1 — 画图骨架（复制这个文件改，不要从零写）
 #
 # 用法：
-#   $code = Get-Content -Raw -Encoding UTF8 'C:\Users\thunder\.agents\skills\visio-diagram\scripts\new-figure.ps1'
+#   $code = Get-Content -Raw -Encoding UTF8 (Join-Path $skillRoot 'scripts\new-figure.ps1')
 #   Invoke-Expression $code                        # 不传参，用脚本默认参数
 #   . ([scriptblock]::Create($code)) -Name 'fig-1'  # 要传参必须用 dot-source + 调用运算符 &
 #   （注意：Invoke-Expression 没有 -Args 参数；& ([scriptblock]::Create($code)) @{} 才是带参写法）
@@ -13,14 +13,19 @@
 #   阶段 3  高分辨率位图  → **另开一个不可见会话**打开已保存文件来放大导出，
 #                          否则会就地改主文档，Visio 窗口里会看到一次放大重绘
 param(
-  [string]$OutDir = 'C:\Users\thunder\Desktop\DSHTs\out',
+  [string]$OutDir = (Join-Path $env:USERPROFILE 'Desktop\DSHTs\out'),
   [string]$Name = 'fig-1',
   [ValidateSet('slides','journal')][string]$Preset = 'slides',
   [switch]$HighRes
 )
 
 # ---------- 载入工具箱 ----------
-$skillDir = if ($PSScriptRoot) { $PSScriptRoot } else { 'C:\Users\thunder\.agents\skills\visio-diagram\scripts' }
+# 技能根目录：直接执行时由 $PSScriptRoot 推得；被 dot-source 加载时为空，
+# 退回到 $env:VISIO_SKILL_ROOT（装在别处时设这个）或默认安装位置
+$skillRoot = if ($env:VISIO_SKILL_ROOT) { $env:VISIO_SKILL_ROOT }
+             elseif ($PSScriptRoot) { Split-Path -Parent $PSScriptRoot }
+             else { Join-Path $env:USERPROFILE '.agents\skills\visio-diagram' }
+$skillDir = Join-Path $skillRoot 'scripts'
 . ([scriptblock]::Create((Get-Content -Raw -Encoding UTF8 (Join-Path $skillDir 'visio-lib.ps1'))))
 
 # ---------- 版面参数 ----------

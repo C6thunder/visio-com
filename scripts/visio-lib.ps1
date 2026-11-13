@@ -633,8 +633,9 @@ function New-VisioJournalDeliverables {
 
 function Get-VisioSkillRoot {
   # dot-source 方式加载时 $PSScriptRoot 为空，需要兜底
+  if ($env:VISIO_SKILL_ROOT) { return $env:VISIO_SKILL_ROOT }
   if ($PSScriptRoot) { return (Split-Path -Parent $PSScriptRoot) }
-  return 'C:\Users\thunder\.agents\skills\visio-diagram'
+  return (Join-Path $env:USERPROFILE '.agents\skills\visio-diagram')
 }
 
 function Find-VisioMaster {

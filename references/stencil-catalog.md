@@ -228,7 +228,7 @@ PYRAMID_SHAPES_M（11） · VENNDIAG_M（12）
 
 ```powershell
 # 加载库
-. ([scriptblock]::Create((Get-Content -Raw -Encoding UTF8 'C:\Users\thunder\.agents\skills\visio-diagram\scripts\visio-lib.ps1')))
+. ([scriptblock]::Create((Get-Content -Raw -Encoding UTF8 (Join-Path $skillRoot 'scripts\visio-lib.ps1'))))
 
 # ① 全库检索（走缓存清单，毫秒级）
 Find-VisioMaster -Pattern '判定','菱形','时间线' | Format-Table -AutoSize

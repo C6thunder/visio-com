@@ -1,7 +1,7 @@
 ﻿# visio-find-master.ps1 — 在本机全部模具库里按关键词检索形状（绘图前查模具用）
 #
 # 用法：
-#   $code = Get-Content -Raw -Encoding UTF8 'C:\Users\thunder\.agents\skills\visio-diagram\scripts\visio-find-master.ps1'
+#   $code = Get-Content -Raw -Encoding UTF8 (Join-Path $skillRoot 'scripts\visio-find-master.ps1')
 #   Invoke-Expression $code
 #
 #   # 1) 检索（走缓存清单，毫秒级）
@@ -22,10 +22,14 @@ param(
   [int]$Limit = 60
 )
 
-# 用 Invoke-Expression 执行时 $PSScriptRoot 为空，这里做兜底
-$skillDir = if ($PSScriptRoot) { $PSScriptRoot } else { 'C:\Users\thunder\.agents\skills\visio-diagram\scripts' }
+# 技能根目录：直接执行时由 $PSScriptRoot 推得；被 Invoke-Expression 加载时为空，
+# 退回到 $env:VISIO_SKILL_ROOT（装在别处时设这个）或默认安装位置
+$skillRoot = if ($env:VISIO_SKILL_ROOT) { $env:VISIO_SKILL_ROOT }
+             elseif ($PSScriptRoot) { Split-Path -Parent $PSScriptRoot }
+             else { Join-Path $env:USERPROFILE '.agents\skills\visio-diagram' }
+$skillDir = Join-Path $skillRoot 'scripts'
 $libPath = Join-Path $skillDir 'visio-lib.ps1'
-if (-not (Test-Path $libPath)) { $libPath = 'C:\Users\thunder\.agents\skills\visio-diagram\scripts\visio-lib.ps1' }
+if (-not (Test-Path $libPath)) { throw "找不到 visio-lib.ps1：$libPath（技能装在别处时设置 `$env:VISIO_SKILL_ROOT）" }
 . ([scriptblock]::Create((Get-Content -Raw -Encoding UTF8 $libPath)))
 
 $hits = Find-VisioMaster -Pattern $Pattern -Limit 500

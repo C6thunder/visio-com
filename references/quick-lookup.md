@@ -83,7 +83,7 @@
 dot-source 之后直接用：
 
 ```powershell
-. ([scriptblock]::Create((Get-Content -Raw -Encoding UTF8 'C:\Users\thunder\.agents\skills\visio-diagram\scripts\visio-lib.ps1')))
+. ([scriptblock]::Create((Get-Content -Raw -Encoding UTF8 (Join-Path $skillRoot 'scripts\visio-lib.ps1'))))
 ```
 
 | 函数 | 作用 |
@@ -121,17 +121,24 @@ dot-source 之后直接用：
 
 ```powershell
 # 全库关键词检索（毫秒级）+ 同名形状提示
-$code = Get-Content -Raw -Encoding UTF8 'C:\Users\thunder\.agents\skills\visio-diagram\scripts\visio-find-master.ps1'
+$code = Get-Content -Raw -Encoding UTF8 (Join-Path $skillRoot 'scripts\visio-find-master.ps1')
 Invoke-Expression $code
 # → Find-VisioMaster -Pattern '判定','时间线'
 
 # 直接 grep 全量清单（不要整读 398 KB 文件）
-Select-String -Path 'C:\Users\thunder\.agents\skills\visio-diagram\references\data\visio-masters-full.tsv' -Pattern '时间线'
+Select-String -Path (Join-Path $skillRoot 'references\data\visio-masters-full.tsv') -Pattern '时间线'
 ```
 
 ## 7. 换机器
 
-跑 `scripts/visio-inventory.ps1` 重扫模具库清单（**不启动 Visio，3 秒**），产出自动落到 `references/data/`。
+先把技能根目录定下来（默认安装位置之外的机器要设环境变量）：
+
+```powershell
+$skillRoot = if ($env:VISIO_SKILL_ROOT) { $env:VISIO_SKILL_ROOT } else { Join-Path $env:USERPROFILE '.agents\skills\visio-diagram' }
+# 装在别处：$env:VISIO_SKILL_ROOT = 'D:\skills\visio-diagram'
+```
+
+再跑 `scripts/visio-inventory.ps1` 重扫模具库清单（**不启动 Visio，3 秒**），产出自动落到 `references/data/`。
 
 ## 8. 照着参考图重绘（用户给一张图要"用 Visio 重画"）
 

@@ -16,6 +16,12 @@ git clone https://github.com/<you>/visio-com.git "$HOME\.agents\skills\visio-dia
 
 或直接复制目录到 `~/.agents/skills/visio-diagram`。
 
+装在其它位置时，设一个环境变量指回技能根目录（脚本与文档里的路径都靠它）：
+
+```powershell
+$env:VISIO_SKILL_ROOT = 'D:\skills\visio-diagram'
+```
+
 
 ## 已知限制
 - 纯 Windows + 本机 Visio，不能跨平台。
